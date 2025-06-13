@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - Mecon Asset System</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      background-color: #bbbbbb;  
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .login-container {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 300px;
+      }
+      .login-container h2 {
+        color: #333;
+        font-size: 20px;
+      }
+      .login-container img {
+        height: 60px;
+      }
+      .login-container input {
+        width: 100%;
+        margin-top: 10px;
+        font-size: 15px;
+        border-radius: 3px;
+        border: 1px solid black;
+        padding: 6px;
+      }
+      .login-button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 12px;
+        background-color: #004080;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .login-button:hover {
+        background-color: #0059b3;
+      }
+      .emplogin {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <img src="/src/main/resources/static/image/image.png" alt="" />
+      <h2>Mecon Asset Management</h2>
+      <input type="text" placeholder="Username" />
+      <input type="password" placeholder="Password" />
+      <a href="/admin" class="login-button">Login as Admin</a>
+      <a href="employeehome.html" class="emplogin">Login as Employee</a>
+    </div>
+  </body>
+</html>
