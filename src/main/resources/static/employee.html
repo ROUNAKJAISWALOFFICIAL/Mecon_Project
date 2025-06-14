@@ -1,1 +1,179 @@
-eeeeeeeeeeeeeeeee
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Dashboard - Asset Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    /* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Layout */
+body {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  color: #333;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #1d3557;
+  color: white;
+  padding: 20px 0;
+}
+
+.sidebar .logo {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+}
+
+.sidebar ul li {
+  padding: 15px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sidebar ul li i {
+  margin-right: 10px;
+}
+
+.sidebar ul li:hover {
+  background-color: #457b9d;
+}
+
+.main-content {
+  flex: 1;
+  padding: 25px;
+}
+
+.header {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.header h1 {
+  font-size: 24px;
+}
+
+.user-info {
+  font-size: 14px;
+  color: #555;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #1d3557;
+}
+
+.card .value {
+  font-size: 26px;
+  font-weight: bold;
+  color: #2a9d8f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header h1 {
+    margin-bottom: 10px;
+  }
+}
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">
+      <h3>Employee Panel</h3>
+    </div>
+    <nav>
+      <ul>
+        <li><i class="fas fa-home"></i> Home</li>
+        <li><i class="fas fa-laptop"></i> My Assets</li>
+        <li><i class="fas fa-file-signature"></i> Request Asset</li>
+        <li><i class="fas fa-undo"></i> Return Request</li>
+        <li><i class="fas fa-history"></i> Usage History</li>
+        <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="header">
+      <h1>Welcome, Shubham</h1>
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i> Employee ID: EMP1234
+      </div>
+    </header>
+
+    <section class="dashboard">
+      <div class="card">
+        <h3>Assets Assigned</h3>
+        <p class="value">3</p>
+      </div>
+      <div class="card">
+        <h3>Pending Requests</h3>
+        <p class="value">1</p>
+      </div>
+      <div class="card">
+        <h3>Returned Assets</h3>
+        <p class="value">5</p>
+      </div>
+      <div class="card">
+        <h3> Service Queue</h3>
+        <p class="value">2</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
