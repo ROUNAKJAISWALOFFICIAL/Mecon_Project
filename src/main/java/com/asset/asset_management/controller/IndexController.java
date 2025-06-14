@@ -7,12 +7,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class IndexController {
 
     @GetMapping("/")
-    public String index() {
-        return "redirect:/index.html";  // Open login page
+    public String redirectToLogin() {
+        return "redirect:/index.html";
     }
 
     @GetMapping("/admin")
-    public String home() {
-        return "redirect:/home.html";   // After login, redirect to static page
+    public String redirectToAdmin() {
+        return "redirect:/admin.html";
+    }
+
+    @GetMapping("/employee")
+    public String redirectToEmployee() {
+        return "redirect:/employee.html";
     }
 }

@@ -6,7 +6,7 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-      background-color: #bbbbbb;  
+        background-color: #bbbbbb;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -51,19 +51,33 @@
       .login-button:hover {
         background-color: #0059b3;
       }
-      .emplogin {
-        text-decoration: none;
+      .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
       }
     </style>
   </head>
   <body>
     <div class="login-container">
-      <img src="/src/main/resources/static/image/image.png" alt="" />
+      <img src="/image/MECON-01.png" alt="Logo" />
       <h2>Mecon Asset Management</h2>
-      <input type="text" placeholder="Username" />
-      <input type="password" placeholder="Password" />
-      <a href="/admin" class="login-button">Login as Admin</a>
-      <a href="employeehome.html" class="emplogin">Login as Employee</a>
+      <form action="/login" method="post">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit" class="login-button">Login</button>
+      </form>
+
+      <!-- Optional error display -->
+      <div class="error">
+        <!-- This shows only if redirected with error -->
+        <script>
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get("error") === "true") {
+            document.write("Invalid username or password");
+          }
+        </script>
+      </div>
     </div>
   </body>
 </html>
