@@ -1,14 +1,12 @@
-# Use Eclipse Temurin Java 17 (or 21 if your project uses it)
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set the working directory
+# Stage 1: Build the application
+FROM maven:3.8.7-eclipse-temurin-17-alpine AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy the JAR file to the container
-COPY target/*.jar app.jar
-
-# Expose the port your app runs on (default 8080)
+# Stage 2: Run the application
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Run the jar file
 ENTRYPOINT ["java", "-jar", "app.jar"]
