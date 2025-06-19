@@ -1,0 +1,8 @@
+FROM mysql:8
+
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=mecon_db
+ENV MYSQL_USER=render_user
+ENV MYSQL_PASSWORD=yourpassword
+
+EXPOSE 3306
