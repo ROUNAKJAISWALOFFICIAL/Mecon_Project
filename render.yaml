@@ -3,15 +3,15 @@ services:
     name: mecon-app
     env: docker
     plan: free
-buildCommand: ./mvnw clean package -DskipTests
-startCommand: java -jar target/mecon-0.0.1-SNAPSHOT.jar
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/mecon-0.0.1-SNAPSHOT.jar
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:mysql://mysql-server:3306/mecon_db
       - key: SPRING_DATASOURCE_USERNAME
         value: render_user
       - key: SPRING_DATASOURCE_PASSWORD
-        value: password
+        value: yourpassword
 
   - type: private_service
     name: mysql-server
