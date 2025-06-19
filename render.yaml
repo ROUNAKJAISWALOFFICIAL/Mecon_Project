@@ -7,22 +7,14 @@ services:
     startCommand: java -jar target/mecon-0.0.1-SNAPSHOT.jar
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://mysql-server:3306/mecon_db
+        value: jdbc:mysql://mysql:3306/mecon_db
       - key: SPRING_DATASOURCE_USERNAME
         value: render_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: yourpassword
 
-  - type: private_service
-    name: mysql-server
-    env: ubuntu
+  - type: background
+    name: mysql
+    env: docker
     plan: free
-    startCommand: |
-      sudo apt update && \
-      sudo apt install mysql-server -y && \
-      sudo systemctl start mysql && \
-      sudo mysql -e "CREATE USER 'render_user'@'%' IDENTIFIED BY 'yourpassword'; \
-      GRANT ALL PRIVILEGES ON *.* TO 'render_user'@'%'; \
-      CREATE DATABASE mecon_db; \
-      FLUSH PRIVILEGES;" && \
-      tail -f /dev/null
+    dockerfilePath: ./mysql.Dockerfile
