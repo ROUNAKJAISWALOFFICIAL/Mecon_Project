@@ -131,8 +131,14 @@
         gap: 25px; /* Larger gap */
         margin-top: 20px;
       }
+       .department-category-grid {
+        display: grid; /* Use grid for better control */
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr) ); /* Responsive grid */
+        gap: 25px; /* Larger gap */
+        margin-top: 20px;
+      }
 
-      .asset-card {
+      .card {
         border: 1px solid #e0e0e0; /* Lighter border */
         border-radius: 12px;
         padding: 20px;
@@ -148,7 +154,7 @@
         min-height: 120px; /* Ensure cards have a minimum height */
       }
 
-      .asset-card:hover {
+      .card:hover {
         transform: translateY(-5px) scale(1.02); /* Slight lift and scale */
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* More pronounced shadow on hover */
       }
@@ -159,7 +165,7 @@
         color: #3498db; /* Brighter blue */
         transition: color 0.3s ease;
       }
-      .asset-card:hover .asset-icon {
+      .card:hover .asset-icon {
         color: #2980b9; /* Slightly darker on hover */
       }
 
@@ -437,3 +443,181 @@
         color: rgb(0, 205, 147);
         font-size: 16px;
       }
+       .department-category-grid {
+        display: grid; /* Use grid for better control */
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr) ); /* Responsive grid */
+        gap: 25px; /* Larger gap */
+        margin-top: 20px;
+      }
+/* Filter Controls */
+    #employeeFilterControls {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    display: flex; /* Use flexbox for layout */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 20px; /* Space between filter elements */
+    align-items: flex-end; /* Align items to the bottom */
+}
+
+#employeeFilterControls label {
+    display: flex;
+    flex-direction: row;
+    font-size: 14px;
+    color: #555;
+}
+
+#employeeFilterControls input[type="text"],
+#employeeFilterControls input[type="date"] { /* Added date inputs */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 5px; /* Space between label and input */
+    width: 150px; /* Fixed width for inputs */
+}
+
+#employeeFilterControls select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 5px; /* Space between label and input */
+    width: 150px; /* Fixed width for inputs */
+}
+
+#employeeFilterControls button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#employeeFilterControls button:hover {
+    background-color: #2980b9;
+}
+
+/* --- Employee List Table --- */
+#employeeListTable table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures rounded corners for table */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+#employeeListTable th,
+#employeeListTable td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 15px; /* More padding */
+    text-align: left;
+}
+
+#employeeListTable th {
+    background-color: #f2f2f2; /* Light gray header */
+    color: #555;
+    font-weight: 600; /* Slightly bolder */
+    text-transform: uppercase; /* Uppercase headers */
+    font-size: 14px;
+}
+
+#employeeListTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Zebra striping */
+}
+
+#employeeListTable tbody tr:hover {
+    background-color: #eef7ff; /* Light blue on hover */
+}
+
+/* --- Add Employee Form Styles --- */
+#addEmployeeFormContainer {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 15px;
+}
+
+#addEmployeeFormContainer h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+#newEmployeeForm {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+#newEmployeeForm label {
+
+    font-weight: 500;
+    color: #444;
+}
+
+#newEmployeeForm input[type="text"],
+#newEmployeeForm input[type="email"], /* Added email input */
+#newEmployeeForm input[type="tel"], /* Added tel input */
+#newEmployeeForm input[type="date"], /* Added date input */
+#newEmployeeForm input[type="number"],
+#newEmployeeForm textarea,
+#newEmployeeForm select {
+
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+#newEmployeeForm textarea {
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 80px;
+}
+
+#newEmployeeForm .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /* Align buttons to the right */
+    margin-top: 20px;
+}
+
+#newEmployeeForm .form-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#newEmployeeForm .form-actions button[type="submit"] {
+    background-color: #28a745; /* Green for submit */
+    color: white;
+}
+
+#newEmployeeForm .form-actions button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+#newEmployeeForm .form-actions button[type="button"] {
+    /* For cancel button */
+    background-color: #6c757d; /* Gray for cancel */
+    color: white;
+}
+
+#newEmployeeForm .form-actions button[type="button"]:hover {
+    background-color: #5a6268;
+}

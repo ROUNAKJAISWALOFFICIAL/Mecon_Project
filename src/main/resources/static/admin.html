@@ -211,17 +211,142 @@
         </p>
       </section>
 <!-- Manage Employees  -->
-      <section
-        id="manageEmployees"
-        class="section"
-        aria-labelledby="manageEmployees-heading"
+    <section
+      id="manageEmployees"
+      class="section"
+      aria-labelledby="manageEmployees-heading"
+    >
+      <h1 id="manageEmployees-heading">Manage Employees</h1>
+      <p>Select a department below to view and manage its employees.</p>
+
+      <!-- Removed User ID display as it's not relevant for a direct backend connection -->
+
+      <div
+        id="departmentCategoryGrid"
+        class="department-category-grid"
+        role="grid"
+        aria-label="Employee Departments"
       >
-        <h1 id="manageEmployees-heading">Manage Employees</h1>
-        <p>
-          Manage employee details, including their assigned assets and contact
-          information.
-        </p>
-      </section>
+        <p>Loading departments...</p>
+      </div>
+
+     <div id="employeeFilterControls" style="margin-top: 30px; display: none">
+  <h2>Filter Employees</h2>
+
+  <label for="employeeNameFilter">Name:</label>
+  <input
+    type="text"
+    id="employeeNameFilter"
+    placeholder="e.g., John Doe"
+    aria-label="Filter by Employee Name"
+  />
+
+  <label for="employeeEmailFilter">Email:</label>
+  <input
+    type="text"
+    id="employeeEmailFilter"
+    placeholder="e.g., john@example.com"
+    aria-label="Filter by Employee Email"
+  />
+
+  <label for="employeePhoneFilter">Phone:</label>
+  <input
+    type="text"
+    id="employeePhoneFilter"
+    placeholder="e.g., 9876543210"
+    aria-label="Filter by Employee Phone Number"
+  />
+
+  <label for="joinDateMin">Min Join Date:</label>
+  <input
+    type="date"
+    id="joinDateMin"
+    aria-label="Minimum Join Date filter"
+  />
+
+  <label for="joinDateMax">Max Join Date:</label>
+  <input
+    type="date"
+    id="joinDateMax"
+    aria-label="Maximum Join Date filter"
+  />
+
+  <button onclick="applyEmployeeFilters()">Apply Filter</button>
+  <button id="addEmployeeBtn" onclick="showAddEmployeeForm()">Add Employee</button>
+</div>
+      <div id="employeeListTable" style="margin-top: 20px"></div>
+
+      <div id="addEmployeeFormContainer" style="display: none">
+        <h2>Add New Employee</h2>
+        <form id="newEmployeeForm">
+          <label for="employeeName">Employee Name:</label>
+          <input
+            type="text"
+            id="employeeName"
+            required
+            aria-label="Employee Name"
+            placeholder="e.g., John Doe"
+            class="rounded-md"
+          />
+
+          <label for="employeeEmail">Email:</label>
+          <input
+            type="email"
+            id="employeeEmail"
+            required
+            aria-label="Employee Email"
+            placeholder="e.g., john.doe@example.com"
+            class="rounded-md"
+          />
+
+          <label for="employeePhone">Phone:</label>
+          <input
+            type="tel"
+            id="employeePhone"
+            aria-label="Employee Phone Number"
+            placeholder="e.g., +91-9876543210"
+            class="rounded-md"
+          />
+
+          <label for="employeeJoinDate">Join Date:</label>
+          <input
+            type="date"
+            id="employeeJoinDate"
+            required
+            aria-label="Employee Join Date"
+            class="rounded-md"
+          />
+
+          <label for="employeeDepartment">Department:</label>
+          <select
+            id="employeeDepartment"
+            required
+            aria-label="Employee Department"
+            class="rounded-md"
+          >
+            <option value="">-- Select Department --</option>
+            <!-- JS will populate the rest -->
+          </select>
+
+          <label for="employeeDesignation">Designation:</label>
+          <input
+            type="text"
+            id="employeeDesignation"
+            required
+            aria-label="Employee Designation"
+            placeholder="e.g., Software Engineer"
+            class="rounded-md"
+          />
+
+          <div class="form-actions">
+            <button type="submit" class="rounded-md">Add Employee</button>
+            <button type="button" onclick="hideAddEmployeeForm()" class="rounded-md">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
 
       <section id="reports" class="section" aria-labelledby="reports-heading">
         <h1 id="reports-heading">Reports</h1>
@@ -381,7 +506,7 @@
           categories.forEach((cat) => {
             const iconClass = getIconForCategory(cat.name);
             const card = document.createElement("div");
-            card.className = "asset-card";
+            card.className = "card";
             // Add ARIA attributes for grid items
             card.setAttribute("role", "gridcell");
             card.setAttribute("tabindex", "0"); // Make div focusable
@@ -879,6 +1004,232 @@
           window.location.href = "/index.html"; // change to your login page path
         }, 1000);
       }
+    let departments = [];
+let selectedDepartmentId = null;
+let allEmployees = [];
+
+// This function determines the icon based on the department name
+function getIconForDepartment(name) {
+    if (!name) return "fa-folder"; // Default icon if name is null or empty
+    switch (name.toLowerCase()) {
+        case "corporate finance":
+            return "fa-chart-line"; // Example: financial icon
+        case "human resources":
+            return "fa-users"; // Example: people icon
+        case "marketing & business development":
+            return "fa-bullhorn"; // Example: megaphone icon
+        case "project & construction management":
+            return "fa-hard-hat"; // Example: construction icon
+        case "engineering services (mechanical)":
+            return "fa-cogs"; // Example: gears icon
+        case "engineering services (electrical)":
+            return "fa-bolt"; // Example: lightning icon
+        case "engineering services (civil & structural)":
+            return "fa-drafting-compass"; // Example: compass icon
+        case "information technology services":
+            return "fa-laptop-code"; // Example: laptop icon
+        case "research & development":
+            return "fa-flask"; // Example: flask icon
+        case "quality assurance & inspection":
+            return "fa-check-double"; // Example: checkmark icon
+        case "procurement & stores":
+            return "fa-boxes"; // Example: boxes icon
+        case "legal & contracts":
+            return "fa-gavel"; // Example: gavel icon
+        case "administration":
+            return "fa-clipboard-list"; // Example: clipboard icon
+        case "environmental engineering":
+            return "fa-leaf"; // Example: leaf icon
+        case "metals division":
+            return "fa-industry"; // Example: factory icon
+        case "power division":
+            return "fa-charging-station"; // Example: power station icon
+        case "oil & gas division":
+            return "fa-gas-pump"; // Example: gas pump icon
+        case "infrastructure division":
+            return "fa-city"; // Example: city icon
+        case "ispat hospital":
+            return "fa-hospital"; // Example: hospital icon
+        case "corporate communication":
+            return "fa-comments"; // Example: chat bubbles icon
+        default:
+            return "fa-building"; // Default icon for any other department
+    }
+}
+
+window.onload = async () => {
+    await loadDepartments();
+};
+
+async function loadDepartments() {
+    try {
+        const res = await fetch("/api/departments");
+        if (!res.ok) throw new Error("Failed to fetch departments");
+        departments = await res.json();
+
+        const grid = document.getElementById("departmentCategoryGrid");
+        grid.innerHTML = "";
+        departments.forEach((dept) => {
+            // Use dept.departmentName for the function call
+            const iconClass = getIconForDepartment(dept.departmentName); // Corrected: use dept.departmentName
+            const card = document.createElement("div");
+            card.className = "card";
+            // Add ARIA attributes for grid items
+            card.setAttribute("role", "gridcell");
+            card.setAttribute("tabindex", "0"); // Make div focusable
+            card.setAttribute("aria-label", `View ${dept.departmentName} department`); // Corrected: use dept.departmentName
+            card.innerHTML = `
+                <div class="asset-icon"><i class="fas ${iconClass}" aria-hidden="true"></i></div>
+                <h3>${dept.departmentName}</h3> `;
+            // Use a common function for click handler to pass both ID and Name
+            card.onclick = () => loadEmployees(dept.id); // Corrected: calls loadEmployees directly
+            // Add keyboard accessibility for Enter key
+            card.onkeydown = (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault(); // Prevent default scroll for space bar
+                    loadEmployees(dept.id); // Corrected: calls loadEmployees directly
+                }
+            };
+            grid.appendChild(card);
+        });
+
+        // Populate <select> in add form
+        const deptSelect = document.getElementById("employeeDepartment");
+        deptSelect.innerHTML = '<option value="">-- Select Department --</option>'; // Clear existing options
+        departments.forEach((dept) => {
+            const option = document.createElement("option");
+            option.value = dept.id;
+            option.textContent = dept.departmentName; // Correct: use dept.departmentName
+            deptSelect.appendChild(option);
+        });
+    } catch (err) {
+        console.error("Error loading departments:", err);
+        // Optionally display an error message to the user
+        document.getElementById("departmentCategoryGrid").innerHTML = "<p>Error loading departments. Please try again later.</p>";
+    }
+}
+
+async function loadEmployees(departmentId) {
+    selectedDepartmentId = departmentId;
+    document.getElementById("employeeFilterControls").style.display = "flex";
+
+    try {
+        const res = await fetch(`http://localhost:8080/api/employees/department/${departmentId}`);
+        if (!res.ok) throw new Error("Failed to fetch employees");
+        allEmployees = await res.json();
+        displayEmployees(allEmployees);
+    } catch (err) {
+        console.error("Error loading employees:", err);
+        document.getElementById("employeeListTable").innerHTML = "<p>Error loading employees. Please try again later.</p>";
+    }
+}
+
+function displayEmployees(employeeList) {
+    const tableDiv = document.getElementById("employeeListTable");
+    if (employeeList.length === 0) {
+        tableDiv.innerHTML = "<p>No employees found.</p>";
+        return;
+    }
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th><th>Email</th><th>Phone</th><th>Designation</th><th>Join Date</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    employeeList.forEach(emp => {
+        html += `
+            <tr>
+                <td>${emp.name}</td>
+                <td>${emp.email}</td>
+                <td>${emp.phone}</td>
+                <td>${emp.designation}</td>
+                <td>${emp.joinDate}</td>
+            </tr>
+        `;
+    });
+
+    html += "</tbody></table>";
+    tableDiv.innerHTML = html;
+}
+
+function applyEmployeeFilters() {
+    const nameFilter = document.getElementById("employeeNameFilter").value.toLowerCase();
+    const emailFilter = document.getElementById("employeeEmailFilter").value.toLowerCase();
+    const phoneFilter = document.getElementById("employeePhoneFilter").value.toLowerCase();
+    const minDate = document.getElementById("joinDateMin").value;
+    const maxDate = document.getElementById("joinDateMax").value;
+    // You might still want to keep designation filter if it's separate from a general name search
+    // const designationFilter = document.getElementById("designationFilter").value.toLowerCase();
+
+
+    const filtered = allEmployees.filter(emp => {
+        // Filter by Name
+        const matchName = !nameFilter || emp.name.toLowerCase().includes(nameFilter);
+
+        // Filter by Email
+        const matchEmail = !emailFilter || emp.email.toLowerCase().includes(emailFilter);
+
+        // Filter by Phone
+        const matchPhone = !phoneFilter || emp.phone.toLowerCase().includes(phoneFilter);
+
+        // Filter by Join Date (existing logic)
+        const joinDate = emp.joinDate; // Assuming emp.joinDate is in 'YYYY-MM-DD' format from your backend
+        const matchMinDate = !minDate || joinDate >= minDate;
+        const matchMaxDate = !maxDate || joinDate <= maxDate;
+
+        // Combine all filter conditions
+        return matchName && matchEmail && matchPhone && matchMinDate && matchMaxDate;
+    });
+
+    displayEmployees(filtered);
+}
+
+function showAddEmployeeForm() {
+    document.getElementById("addEmployeeFormContainer").style.display = "block";
+}
+
+function hideAddEmployeeForm() {
+    document.getElementById("addEmployeeFormContainer").style.display = "none";
+}
+
+document.getElementById("newEmployeeForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const emp = {
+        name: document.getElementById("employeeName").value,
+        email: document.getElementById("employeeEmail").value,
+        phone: document.getElementById("employeePhone").value,
+        joinDate: document.getElementById("employeeJoinDate").value,
+        designation: document.getElementById("employeeDesignation").value,
+        department: { id: parseInt(document.getElementById("employeeDepartment").value) }
+    };
+
+    try {
+        const res = await fetch("http://localhost:8080/api/employees", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(emp)
+        });
+        if (!res.ok) throw new Error("Failed to add employee");
+        // Reload employees for the currently selected department to show the new one
+        if (selectedDepartmentId) {
+            await loadEmployees(selectedDepartmentId);
+        } else {
+            // If no department was selected (shouldn't happen if UI flow is followed),
+            // you might want to reload departments or handle differently.
+            console.warn("Employee added but no department was selected to refresh.");
+        }
+        this.reset();
+        hideAddEmployeeForm();
+    } catch (err) {
+        console.error("Error adding employee:", err);
+        alert("Failed to add employee. Please check the console for details.");
+    }
+});
     </script>
   </body>
 </html>
