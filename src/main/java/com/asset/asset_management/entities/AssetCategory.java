@@ -1,8 +1,10 @@
+// src/main/java/com/asset/asset_management/entities/AssetCategory.java
 package com.asset.asset_management.entities;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference; // ✅ Add this
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -22,9 +24,10 @@ public class AssetCategory {
 
     private String name;
 
-@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-@JsonManagedReference
-private List<Asset> assets;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonManagedReference // ✅ Matches @JsonBackReference in Asset
+    @JsonIgnore // <-- ADDED THIS: Prevents lazy initialization issues during serialization of AssetCategory
+    private List<Asset> assets;
 
     public AssetCategory() {}
 

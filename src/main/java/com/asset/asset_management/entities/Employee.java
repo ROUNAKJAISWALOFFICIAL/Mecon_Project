@@ -1,8 +1,11 @@
 package com.asset.asset_management.entities;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore; // Import this
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,8 +13,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table; // Good practice to explicitly define @Table
 
 @Entity
+@Table(name = "employee") // Added for clarity, assuming your table name is 'employees'
 public class Employee {
 
     @Id
@@ -21,16 +27,17 @@ public class Employee {
     private String name;
     private String designation;
     private String email;
-
-    // ✅ Add these fields
     private String phone;
-
     private LocalDate joinDate;
 
     @ManyToOne
     @JoinColumn(name = "department_id")
-    @JsonBackReference
+    @JsonBackReference // Correctly manages serialization of the Department relationship
     private Department department;
+
+    @OneToMany(mappedBy = "assignTo")
+    @JsonManagedReference // Correctly manages the JPA bidirectional relationship
+    private List<Asset> assignedAssets;
 
     // Constructors
     public Employee() {}
@@ -72,4 +79,12 @@ public class Employee {
     public Department getDepartment() { return department; }
 
     public void setDepartment(Department department) { this.department = department; }
+
+    public List<Asset> getAssignedAssets() {
+        return assignedAssets;
+    }
+
+    public void setAssignedAssets(List<Asset> assignedAssets) {
+        this.assignedAssets = assignedAssets;
+    }
 }

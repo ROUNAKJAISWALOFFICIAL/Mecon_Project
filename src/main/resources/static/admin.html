@@ -199,17 +199,31 @@
         </div>
       </section>
 
-      <section
-        id="assignAssets"
-        class="section"
-        aria-labelledby="assignAssets-heading"
-      >
-        <h1 id="assignAssets-heading">Assign Assets</h1>
-        <p>
-          Effortlessly assign and unassign assets to and from employees. Track
-          who has what, and when.
-        </p>
-      </section>
+    <div class="container">
+        <section id="assignAssets" class="section" aria-labelledby="assignAssets-heading">
+            <h1 id="assignAssets-heading" class="section-heading">Assign Assets</h1>
+            <p class="section-description">
+                Effortlessly assign and unassign assets to and from employees. Track
+                who has what, and when.
+            </p>
+
+            <form id="assignForm" class="assign-form">
+                <label for="assetSelect" class="form-label">Select Asset:</label>
+                <select id="assetSelect" name="assetId" class="form-select"></select>
+
+                <label for="employeeIdInput" class="form-label">Assign To (Employee ID):</label>
+                <input type="text" id="employeeIdInput" name="employeeId" class="form-input" placeholder="Enter Employee ID" required>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                    <button type="button" id="unassignBtn" class="btn btn-secondary">Unassign</button>
+                </div>
+            </form>
+
+            <div id="assignResult" class="result-message"></div>
+        </section>
+    </div>
+
 <!-- Manage Employees  -->
     <section
       id="manageEmployees"
@@ -1230,6 +1244,139 @@ document.getElementById("newEmployeeForm").addEventListener("submit", async func
         alert("Failed to add employee. Please check the console for details.");
     }
 });
+         document.addEventListener('DOMContentLoaded', async () => {
+            const assetSelect = document.getElementById('assetSelect');
+            const employeeIdInput = document.getElementById('employeeIdInput');
+            const assignForm = document.getElementById('assignForm');
+            const unassignBtn = document.getElementById('unassignBtn');
+            const assignResult = document.getElementById('assignResult');
+
+            // Function to display messages
+            function showMessage(message, type) {
+                assignResult.textContent = message;
+                assignResult.className = `result-message show ${type}`; // Reset classes and add new ones
+                setTimeout(() => {
+                    assignResult.classList.remove('show');
+                    // Optionally clear text after animation
+                    setTimeout(() => assignResult.textContent = '', 400);
+                }, 3000); // Message disappears after 3 seconds
+            }
+
+            // Function to fetch assets and populate the dropdown with only AVAILABLE assets
+           async function fetchAssets() {
+    try {
+        const response = await fetch('/api/assets/available'); // only unassigned assets
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const assets = await response.json();
+        assetSelect.innerHTML = '<option value="">-- Select an Available Asset --</option>';
+
+        if (assets.length === 0) {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "No available assets";
+            option.disabled = true;
+            assetSelect.appendChild(option);
+        } else {
+            assets.forEach(asset => {
+                const option = document.createElement('option');
+                option.value = asset.id;
+                option.textContent = `${asset.name} (ID: ${asset.id})- Status: ${asset.status}`;
+                assetSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching assets:', error);
+        showMessage('Failed to load assets. Please try again.', 'error');
+    }
+}
+
+            // Initial fetch of assets when the page loads
+            await fetchAssets();
+
+            // Handle Assign Form Submission
+            assignForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const assetId = assetSelect.value;
+                const employeeId = employeeIdInput.value.trim();
+
+                if (!assetId) {
+                    showMessage('Please select an asset.', 'error');
+                    return;
+                }
+                if (!employeeId) {
+                    showMessage('Please enter an Employee ID.', 'error');
+                    return;
+                }
+
+                // Basic validation for employeeId to be a number
+                if (isNaN(employeeId) || employeeId <= 0) {
+                    showMessage('Employee ID must be a valid positive number.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/assets/assign/${assetId}`, {
+                        method: 'PUT', // Or 'POST' if preferred, PUT for updating a resource
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ employeeId: parseInt(employeeId, 10) }) // Ensure employeeId is a number
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    showMessage(result.message, 'success');
+                    await fetchAssets(); // Re-fetch assets to update their status in the dropdown
+                    employeeIdInput.value = ''; // Clear employee ID input
+                    assetSelect.value = ''; // Clear asset selection
+                } catch (error) {
+                    console.error('Error assigning asset:', error);
+                    showMessage(`Error assigning asset: ${error.message}`, 'error');
+                }
+            });
+
+            // Handle Unassign Button Click
+            unassignBtn.addEventListener('click', async () => {
+                const assetId = assetSelect.value; // Note: For unassign, all assets should ideally be selectable, or a different dropdown/list used.
+                                                   // For this specific request, we're sticking to the "available" dropdown for both.
+                                                   // A more robust solution might have a separate "Unassign" section with a dropdown of *assigned* assets.
+
+                if (!assetId) {
+                    showMessage('Please select an asset to unassign.', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/assets/unassign/${assetId}`, {
+                        method: 'PUT', // Or 'POST'
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    showMessage(result.message, 'success');
+                    await fetchAssets(); // Re-fetch assets to update their status
+                    employeeIdInput.value = ''; // Clear employee ID input
+                    assetSelect.value = ''; // Clear asset selection
+                } catch (error) {
+                    console.error('Error unassigning asset:', error);
+                    showMessage(`Error unassigning asset: ${error.message}`, 'error');
+                }
+            });
+        });
     </script>
   </body>
 </html>

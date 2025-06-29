@@ -1,14 +1,7 @@
 package com.asset.asset_management.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "assets")
@@ -25,10 +18,14 @@ public class Asset {
 
 @ManyToOne
 @JoinColumn(name = "category_id")
-@JsonBackReference 
+@JsonBackReference
 private AssetCategory category;
 
-    // Constructors
+
+    @ManyToOne
+    @JoinColumn(name = "assign_to")
+    private Employee assignTo;
+
     public Asset() {}
 
     public Asset(String name, String description, double value, String status, AssetCategory category) {
@@ -39,7 +36,6 @@ private AssetCategory category;
         this.category = category;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -57,4 +53,7 @@ private AssetCategory category;
 
     public AssetCategory getCategory() { return category; }
     public void setCategory(AssetCategory category) { this.category = category; }
+
+    public Employee getAssignTo() { return assignTo; }
+    public void setAssignTo(Employee assignTo) { this.assignTo = assignTo; }
 }

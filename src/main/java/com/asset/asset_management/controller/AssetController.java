@@ -1,22 +1,17 @@
 package com.asset.asset_management.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.asset.asset_management.entities.Asset;
+import com.asset.asset_management.entities.Employee;
 import com.asset.asset_management.interfaces.AssetRepository;
+import com.asset.asset_management.interfaces.EmployeeRepository;
 
 @RestController
 @RequestMapping("/api/assets")
@@ -25,6 +20,9 @@ public class AssetController {
 
     @Autowired
     private AssetRepository assetRepo;
+
+    @Autowired
+    private EmployeeRepository employeeRepo;
 
     @GetMapping("/category/{categoryId}")
     public List<Asset> getAssetsByCategory(@PathVariable Long categoryId) {
@@ -41,7 +39,6 @@ public class AssetController {
         return assetRepo.save(asset);
     }
 
-    // ✅ UPDATE an asset (used for edit)
     @PutMapping("/{id}")
     public ResponseEntity<Asset> updateAsset(@PathVariable Long id, @RequestBody Asset updatedAsset) {
         Optional<Asset> optionalAsset = assetRepo.findById(id);
@@ -61,14 +58,60 @@ public class AssetController {
         }
     }
 
-    // ✅ DELETE an asset
+    @GetMapping("/available")
+    public List<Asset> getAvailableAssets() {
+        return assetRepo.findByAssignToIsNullAndStatusIgnoreCase("available");
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
         if (assetRepo.existsById(id)) {
             assetRepo.deleteById(id);
-            return ResponseEntity.noContent().build(); // 204
+            return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build(); // 404
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/assign/{assetId}")
+    public ResponseEntity<?> assignAsset(
+            @PathVariable Long assetId,
+            @RequestBody Map<String, Long> body
+    ) {
+        Long employeeId = body.get("employeeId");
+
+        Optional<Asset> assetOpt = assetRepo.findById(assetId);
+        Optional<Employee> empOpt = employeeRepo.findById(employeeId);
+
+        if (assetOpt.isPresent() && empOpt.isPresent()) {
+            Asset asset = assetOpt.get();
+            asset.setAssignTo(empOpt.get());
+
+            // ✅ Update status
+            asset.setStatus("Assigned");
+
+            assetRepo.save(asset);
+            return ResponseEntity.ok(Map.of("message", "Asset assigned successfully."));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid asset or employee ID."));
+        }
+    }
+
+    @PutMapping("/unassign/{assetId}")
+    public ResponseEntity<?> unassignAsset(@PathVariable Long assetId) {
+        Optional<Asset> assetOpt = assetRepo.findById(assetId);
+
+        if (assetOpt.isPresent()) {
+            Asset asset = assetOpt.get();
+            asset.setAssignTo(null);
+
+            // ✅ Revert status
+            asset.setStatus("available");
+
+            assetRepo.save(asset);
+            return ResponseEntity.ok(Map.of("message", "Asset unassigned successfully."));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("message", "Asset not found."));
         }
     }
 }

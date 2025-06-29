@@ -621,3 +621,96 @@
 #newEmployeeForm .form-actions button[type="button"]:hover {
     background-color: #5a6268;
 }
+
+        .section-heading {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .section-description {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 0.5rem;
+        }
+        .form-select,
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #dcdcdc;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #333;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-select:focus,
+        .form-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .btn-primary {
+            background-color: #27ae60;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #2ecc71;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        .btn-secondary {
+            background-color: #e74c3c;
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        .result-message {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            text-align: center;
+            color: #ffffff;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .result-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result-message.success {
+            background-color: #28a745; /* Green */
+        }
+        .result-message.error {
+            background-color: #dc3545; /* Red */
+        }

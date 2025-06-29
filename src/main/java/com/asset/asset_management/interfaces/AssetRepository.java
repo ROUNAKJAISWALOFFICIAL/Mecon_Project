@@ -8,4 +8,6 @@ import com.asset.asset_management.entities.Asset;
 
 public interface AssetRepository extends JpaRepository<Asset, Long> {
 List<Asset> findByCategory_Id(Long categoryId);
+List<Asset> findByAssignToIsNullAndStatusIgnoreCase(String status);
+
 }
