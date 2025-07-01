@@ -1,8 +1,10 @@
 package com.asset.asset_management.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +37,11 @@ public class EmployeeController {
     @PostMapping
 public Employee addEmployee(@RequestBody Employee employee) {
     return employeeRepository.save(employee);
+    }
+    @GetMapping("/api/employees/{id}/details")
+public ResponseEntity<Employee> getEmployeeDetails(@PathVariable Long id) {
+    Optional<Employee> employee = employeeRepository.findById(id);
+    return employee.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 }
 
 }

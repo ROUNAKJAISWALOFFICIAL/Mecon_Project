@@ -9,3 +9,4 @@ public class AssetManagementSystemApplication {
         SpringApplication.run(AssetManagementSystemApplication.class, args);
     }
 }
+    
