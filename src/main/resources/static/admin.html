@@ -274,7 +274,6 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Assign</button>
-                    <button type="button" id="unassignBtn" class="btn btn-secondary">Unassign</button>
                 </div>
             </form>
 
@@ -421,14 +420,68 @@
       </div>
     </section>
 
-      <section id="reports" class="section" aria-labelledby="reports-heading">
-        <h1 id="reports-heading">Reports</h1>
-        <p>
-          Generate insightful reports on asset inventory, assignment history,
-          and asset valuation.
-        </p>
-      </section>
 
+  <section id="reports" class="section" aria-labelledby="reports-heading">
+        <h1 id="reports-heading">Reports</h1>
+        <p>Generate insightful reports on asset inventory, assignment history, and asset valuation.</p>
+
+        <div class="report-controls">
+            <div class="form-group">
+                <label for="reportType">Select Report Type:</label>
+                <select id="reportType" name="reportType" class="form-control">
+                    <option value="">-- Select --</option>
+                    <option value="assetInventory">Asset Inventory Report</option>
+                    <option value="employeeDetails">Employee Details Report</option>
+                </select>
+            </div>
+
+            <div class="form-group filter-category" style="display:none;">
+                <label for="filterCategory">Asset Category:</label>
+                <select id="filterCategory" name="filterCategory" class="form-control"></select>
+            </div>
+
+            <div class="form-group filter-status" style="display:none;">
+                <label for="filterStatus">Asset Status:</label>
+                <select id="filterStatus" name="filterStatus" class="form-control">
+                    <option value="">All</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="UNDER_MAINTENANCE">Under Maintenance</option>
+                    <option value="AVAILABLE">Available</option>
+                </select>
+            </div>
+
+            <div class="form-group filter-department" style="display:none;">
+                <label for="filterDepartment">Department:</label>
+                <select id="filterDepartment" name="filterDepartment" class="form-control"></select>
+            </div>
+
+            <div class="form-group filter-join-date-start" style="display:none;">
+                <label for="filterJoinDateStart">Join Date (Start):</label>
+                <input type="date" id="filterJoinDateStart" name="filterJoinDateStart" class="form-control">
+            </div>
+
+            <div class="form-group filter-join-date-end" style="display:none;">
+                <label for="filterJoinDateEnd">Join Date (End):</label>
+                <input type="date" id="filterJoinDateEnd" name="filterJoinDateEnd" class="form-control">
+            </div>
+
+            <button id="generateReportBtn" class="btn btn-primary">Generate Report</button>
+        </div>
+
+        <div class="report-display">
+            <h2 id="reportTitle" style="display:none;">Generated Report</h2>
+            <div id="reportContent" class="table-responsive">
+                <p id="noReportMessage">Please select a report type and click "Generate Report".</p>
+            </div>
+        </div>
+
+        <div class="report-actions" style="display:none;">
+            <button id="downloadPdfBtn" class="btn btn-success">Download PDF</button>
+            <button id="downloadCsvBtn" class="btn btn-info">Download CSV</button>
+            <button id="printReportBtn" class="btn btn-secondary">Print Report</button>
+        </div>
+    </section>
+<!-- logout button -->
       <section id="logout" class="section" aria-labelledby="logout-heading">
         <h1 id="logout-heading">Logout</h1>
         <p>
@@ -446,7 +499,9 @@
         <button onclick="hideMessageBox()">OK</button>
       </div>
     </div>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
     <script>
     // Global variable to store active link for highlighting
 let activeSidebarLink = document.getElementById("dashboard-link");
@@ -1341,7 +1396,6 @@ document.getElementById("newEmployeeForm").addEventListener("submit", async func
             const assetSelect = document.getElementById('assetSelect');
             const employeeIdInput = document.getElementById('employeeIdInput');
             const assignForm = document.getElementById('assignForm');
-            const unassignBtn = document.getElementById('unassignBtn');
             const assignResult = document.getElementById('assignResult');
 
             // Function to display messages
@@ -1435,41 +1489,340 @@ document.getElementById("newEmployeeForm").addEventListener("submit", async func
                 }
             });
 
-            // Handle Unassign Button Click
-            unassignBtn.addEventListener('click', async () => {
-                const assetId = assetSelect.value; // Note: For unassign, all assets should ideally be selectable, or a different dropdown/list used.
-                                                   // For this specific request, we're sticking to the "available" dropdown for both.
-                                                   // A more robust solution might have a separate "Unassign" section with a dropdown of *assigned* assets.
-
-                if (!assetId) {
-                    showMessage('Please select an asset to unassign.', 'error');
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/api/assets/unassign/${assetId}`, {
-                        method: 'PUT', // Or 'POST'
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    showMessage(result.message, 'success');
-                    await fetchAssets(); // Re-fetch assets to update their status
-                    employeeIdInput.value = ''; // Clear employee ID input
-                    assetSelect.value = ''; // Clear asset selection
-                } catch (error) {
-                    console.error('Error unassigning asset:', error);
-                    showMessage(`Error unassigning asset: ${error.message}`, 'error');
-                }
-            });
         });
+      $(document).ready(function() {
+    console.log("jQuery is ready! Reports script started."); // Debugging line
+
+    const reportTypeSelect = $('#reportType');
+    const reportFiltersDiv = $('.report-controls');
+    const generateReportBtn = $('#generateReportBtn');
+    const reportContentDiv = $('#reportContent');
+    const reportTitle = $('#reportTitle');
+    const noReportMessage = $('#noReportMessage');
+    const reportActionsDiv = $('.report-actions');
+    const downloadPdfBtn = $('#downloadPdfBtn');
+    const downloadCsvBtn = $('#downloadCsvBtn');
+    const printReportBtn = $('#printReportBtn');
+
+    const filterCategory = $('#filterCategory');
+    const filterStatus = $('#filterStatus');
+    const filterDepartment = $('#filterDepartment');
+    const filterJoinDateStart = $('#filterJoinDateStart');
+    const filterJoinDateEnd = $('#filterJoinDateEnd');
+
+    // Function to fetch departments and populate the dropdown
+    function fetchDepartments() {
+        console.log("Fetching departments..."); // Debugging line
+        $.ajax({
+            url: '/api/departments',
+            method: 'GET',
+            success: function(data) {
+                console.log("Departments fetched:", data); // Debugging line
+                let options = '<option value="">All Departments</option>';
+                data.forEach(dept => {
+                    options += `<option value="${dept.id}">${dept.departmentName}</option>`;
+                });
+                filterDepartment.html(options);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching departments:", xhr.responseText || error);
+                // alert("Failed to load departments. Check console for details."); // Removed for less intrusive debugging
+            }
+        });
+    }
+
+    // Function to fetch asset categories and populate the dropdown
+    function fetchAssetCategories() {
+        console.log("Fetching asset categories..."); // Debugging line
+        $.ajax({
+            url: '/api/asset-categories',
+            method: 'GET',
+            success: function(data) {
+                console.log("Asset categories fetched:", data); // Debugging line
+                let options = '<option value="">All Categories</option>';
+                data.forEach(cat => {
+                    options += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+                filterCategory.html(options);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching asset categories:", xhr.responseText || error);
+                // alert("Failed to load asset categories. Check console for details."); // Removed for less intrusive debugging
+            }
+        });
+    }
+
+    // Initial fetch for filter options when the page loads
+    fetchDepartments();
+    fetchAssetCategories();
+
+    reportTypeSelect.on('change', function() {
+        const selectedReport = $(this).val();
+        console.log("Report type changed to:", selectedReport); // Debugging line
+        reportFiltersDiv.find('.form-group').hide(); // Hide all filters by default
+
+        switch (selectedReport) {
+            case 'assetInventory':
+                $('.filter-category').show();
+                $('.filter-status').show();
+                break;
+            case 'employeeDetails':
+                $('.filter-department').show();
+                $('.filter-join-date-start').show();
+                $('.filter-join-date-end').show();
+                break;
+            default:
+                break;
+        }
+        reportContentDiv.empty();
+        reportTitle.hide();
+        reportActionsDiv.hide();
+        noReportMessage.show();
+    });
+
+    generateReportBtn.on('click', function() {
+        const selectedReport = reportTypeSelect.val();
+        let apiUrl = '';
+        let queryParams = {};
+        let reportHeading = 'Generated Report';
+
+        console.log("Generate Report button clicked. Selected Report Type:", selectedReport); // Debugging line
+
+        reportContentDiv.empty();
+        reportTitle.hide();
+        reportActionsDiv.hide();
+        noReportMessage.hide();
+
+        if (!selectedReport) {
+            alert('Please select a report type.');
+            noReportMessage.show();
+            return;
+        }
+
+        switch (selectedReport) {
+            case 'assetInventory':
+                apiUrl = '/api/reports/asset-inventory'; // Match your Spring Boot Controller path
+                queryParams.categoryId = filterCategory.val();
+                queryParams.status = filterStatus.val();
+                reportHeading = 'Asset Inventory Report';
+                break;
+            case 'employeeDetails':
+                apiUrl = '/api/reports/employee-details'; // Match your Spring Boot Controller path
+                queryParams.departmentId = filterDepartment.val();
+                queryParams.joinDateStart = filterJoinDateStart.val();
+                queryParams.joinDateEnd = filterJoinDateEnd.val();
+                reportHeading = 'Employee Details Report';
+                break;
+            default:
+                console.warn("Unknown report type selected.");
+                noReportMessage.show();
+                return;
+        }
+
+        // Remove empty/null/undefined query parameters
+        for (const key in queryParams) {
+            if (queryParams[key] === null || queryParams[key] === undefined || queryParams[key] === '') {
+                delete queryParams[key];
+            }
+        }
+        console.log("Calling API:", apiUrl, "with params:", queryParams); // Debugging line
+
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            data: queryParams,
+            success: function(data) {
+                console.log("API response received:", data); // Debugging line
+                if (data && data.length > 0) {
+                    let tableHtml = '<table class="report-table"><thead><tr>';
+                    const headers = Object.keys(data[0]);
+
+                    headers.forEach(header => {
+                        tableHtml += `<th>${formatHeader(header)}</th>`;
+                    });
+                    tableHtml += '</tr></thead><tbody>';
+
+                    data.forEach(row => {
+                        tableHtml += '<tr>';
+                        headers.forEach(header => {
+                            let cellValue = row[header] !== null && row[header] !== undefined ? row[header] : '';
+                            if (header === 'value' && typeof cellValue === 'number') {
+                                cellValue = cellValue.toFixed(2); // Format currency/value
+                            } else if (header.toLowerCase().includes('date') && cellValue) {
+                                try {
+                                    const dateObj = new Date(cellValue);
+                                    if (!isNaN(dateObj.getTime())) {
+                                        cellValue = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                    }
+                                } catch (e) {
+                                    console.error("Error formatting date:", cellValue, e);
+                                }
+                            }
+                            tableHtml += `<td>${cellValue}</td>`;
+                        });
+                        tableHtml += '</tr>';
+                    });
+                    tableHtml += '</tbody></table>';
+                    reportContentDiv.html(tableHtml);
+                    reportTitle.text(reportHeading).show();
+                    reportActionsDiv.show();
+                } else {
+                    reportContentDiv.html('<p class="text-center">No data found for the selected criteria.</p>');
+                    reportTitle.text(reportHeading).show();
+                    reportActionsDiv.hide();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error generating report:", error, "Response Text:", xhr.responseText);
+                let errorMessage = `Error loading report: ${xhr.status} ${xhr.statusText}`;
+                try {
+                    const errorJson = JSON.parse(xhr.responseText);
+                    errorMessage += ` - ${errorJson.message || errorJson.error || 'Unknown error'}`;
+                } catch (e) {
+                    errorMessage += ` - ${xhr.responseText || error}`;
+                }
+                reportContentDiv.html(`<p style="color: red;">${errorMessage}</p>`); // Simple styling without Bootstrap
+                reportTitle.hide();
+                reportActionsDiv.hide();
+                noReportMessage.show();
+            }
+        });
+    });
+
+    function formatHeader(header) {
+        const headerMap = {
+            'id': 'ID',
+            'name': 'Name',
+            'description': 'Description',
+            'value': 'Value',
+            'status': 'Status',
+            'categoryName': 'Category',
+            'assignedToEmployeeName': 'Assigned To',
+            'departmentName': 'Department',
+            'designation': 'Designation',
+            'email': 'Email',
+            'phone': 'Phone',
+            'joinDate': 'Join Date',
+            'assetId': 'Asset ID',
+            'employeeName': 'Employee Name'
+        };
+        return headerMap[header] || header
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, str => str.toUpperCase());
+    }
+
+    downloadPdfBtn.on('click', function() {
+        const selectedReport = reportTypeSelect.val();
+        let queryParams = {};
+        let pdfDownloadUrl = '';
+
+        console.log("Download PDF button clicked. Selected Report Type:", selectedReport);
+
+        switch (selectedReport) {
+            case 'assetInventory':
+                queryParams.categoryId = filterCategory.val();
+                queryParams.status = filterStatus.val();
+                pdfDownloadUrl = '/api/downloads/assets/pdf'; // Match your Spring Boot Controller path
+                break;
+            case 'employeeDetails':
+                queryParams.departmentId = filterDepartment.val();
+                queryParams.joinDateStart = filterJoinDateStart.val();
+                queryParams.joinDateEnd = filterJoinDateEnd.val();
+                pdfDownloadUrl = '/api/downloads/employees/pdf'; // Match your Spring Boot Controller path
+                break;
+            default:
+                alert('Please select a report type to download PDF.');
+                return;
+        }
+
+        for (const key in queryParams) {
+            if (queryParams[key] === null || queryParams[key] === undefined || queryParams[key] === '') {
+                delete queryParams[key];
+            }
+        }
+
+        const queryString = $.param(queryParams);
+        const fullPdfUrl = `http://localhost:8080${pdfDownloadUrl}${queryString ? '?' + queryString : ''}`;
+
+        console.log("Attempting to download PDF from URL:", fullPdfUrl);
+
+        fetch(fullPdfUrl)
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(`Failed to download PDF: ${response.status} ${response.statusText} - ${text}`);
+                    });
+                }
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const fileName = `${selectedReport.replace(/([A-Z])/g, '-$1').toLowerCase()}_Report_${new Date().toISOString().slice(0,10)}.pdf`;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                console.log("PDF download initiated successfully.");
+            })
+            .catch(error => {
+                console.error('Error during PDF download request:', error);
+                alert('An error occurred while trying to download the PDF. Please check console for details and ensure the backend server is running and accessible.');
+            });
+    });
+
+    downloadCsvBtn.on('click', function() {
+        const selectedReport = reportTypeSelect.val();
+        const table = $('#reportContent table');
+        if (table.length === 0) {
+            alert("No report data to download.");
+            return;
+        }
+
+        let csv = [];
+        table.find('thead tr').each(function() {
+            let row = [];
+            $(this).find('th').each(function() {
+                row.push(`"${$(this).text().trim().replace(/"/g, '""')}"`);
+            });
+            csv.push(row.join(','));
+        });
+        table.find('tbody tr').each(function() {
+            let row = [];
+            $(this).find('td').each(function() {
+                row.push(`"${$(this).text().trim().replace(/"/g, '""')}"`);
+            });
+            csv.push(row.join(','));
+        });
+
+        const csvString = csv.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', `${selectedReport}_report.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log("CSV download initiated.");
+    });
+
+    printReportBtn.on('click', function() {
+        const printContent = $('#reportContent').html();
+        if (!printContent || printContent.trim() === '<p class="text-center">No data found for the selected criteria.</p>') {
+             alert("No report data to print.");
+             return;
+        }
+        console.log("Print report button clicked.");
+        const originalBody = $('body').html();
+        $('body').empty().append(printContent);
+        window.print();
+        $('body').empty().append(originalBody);
+        location.reload();
+    });
+});
     </script>
   </body>
 </html>
