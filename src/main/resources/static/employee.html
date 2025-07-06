@@ -127,7 +127,34 @@ body {
   .header h1 {
     margin-bottom: 10px;
   }
-}  </style>
+}
+
+#asset-details-section h2 {
+  margin-top: 40px;
+  margin-bottom: 15px;
+  color: #1d3557;
+}
+.asset-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: white;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.asset-table th, .asset-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.asset-table th {
+  background-color: #1d3557;
+  color: white;
+}
+  </style>
 </head>
 <body>
   <aside class="sidebar">
@@ -137,14 +164,13 @@ body {
     <nav>
       <ul>
         <li><i class="fas fa-home"></i> Home</li>
-        <li><i class="fas fa-laptop"></i> My Assets</li>
         <li><i class="fas fa-file-signature"></i> Request Asset</li>
-        <li><i class="fas fa-undo"></i> Return Request</li>
-        <li><i class="fas fa-history"></i> Usage History</li>
-<li>
-  <i class="fas fa-sign-out-alt"></i>
-  <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
-</li>
+<li><i class="fas fa-undo"></i> Return Request</li>
+
+        <li>
+          <i class="fas fa-sign-out-alt"></i>
+          <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
+        </li>
       </ul>
     </nav>
   </aside>
@@ -175,9 +201,11 @@ body {
         <p class="value">2</p>
       </div>
     </section>
+
+    <!-- Assigned Asset Details Table -->
+    <section id="asset-details-section"></section>
   </main>
 
-  <!-- ✅ Add script at the bottom -->
   <script>
     fetch("/api/employees/current")
       .then(response => {
@@ -190,10 +218,54 @@ body {
         document.getElementById("emp-name").textContent = employee.name;
         document.getElementById("emp-id").textContent = "EMP" + employee.id;
 
-        // If assignedAssets are available, count them
-        if (employee.assignedAssets) {
-          document.getElementById("assigned-assets-count").textContent = employee.assignedAssets.length;
-        }
+        fetch(`/api/employees/${employee.id}/assigned-assets`)
+          .then(response => response.json())
+          .then(assets => {
+            document.getElementById("assigned-assets-count").textContent = assets.length;
+
+            const section = document.getElementById("asset-details-section");
+
+            if (assets.length === 0) {
+              section.innerHTML = `<p>No assets assigned to you.</p>`;
+              return;
+            }
+
+            let tableHtml = `
+              <h2>My Assigned Assets</h2>
+              <table class="asset-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                    <th>Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+            `;
+
+            assets.forEach(asset => {
+              tableHtml += `
+                <tr>
+                  <td>${asset.id}</td>
+                  <td>${asset.name}</td>
+                  <td>${asset.description}</td>
+                  <td>${asset.value}</td>
+                  <td>${asset.status}</td>
+                  <td>${asset.categoryName}</td>
+                </tr>
+              `;
+            });
+
+            tableHtml += `
+                </tbody>
+              </table>
+            `;
+
+            section.innerHTML = tableHtml;
+          });
       })
       .catch(err => {
         alert("Session expired or not authorized. Redirecting to login...");
