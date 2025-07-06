@@ -110,14 +110,35 @@ public class ReportService {
         return assets.stream().map(AssetReport::new).collect(Collectors.toList());
     }
 
-    // --- Corrected Method Call Here ---
+    /**
+     * Retrieves a list of AssetReport objects for assets assigned to a specific employee.
+     *
+     * @param employeeId The ID of the employee.
+     * @return A list of AssetReport objects representing assets assigned to the employee.
+     */
+    public List<AssetReport> getAssetsAssignedToEmployee(Long employeeId) {
+        return assetRepository.findByAssignTo_Id(employeeId)
+                .stream()
+                .map(AssetReport::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Counts the number of assets assigned to a specific employee.
+     *
+     * @param employeeId The ID of the employee.
+     * @return The count of assets assigned to the employee.
+     */
+    public long countAssetsAssignedToEmployee(Long employeeId) {
+        return assetRepository.findByAssignTo_Id(employeeId).size(); // OR use a custom count method if optimized for large datasets
+    }
+
     public List<EmployeeReportDTO> getEmployeeDetailsReport(Long departmentId, LocalDate joinDateStart, LocalDate joinDateEnd) {
         List<Employee> employees;
 
         if (departmentId != null && joinDateStart != null && joinDateEnd != null) {
             employees = employeeRepository.findByDepartment_IdAndJoinDateBetween(departmentId, joinDateStart, joinDateEnd);
         } else if (departmentId != null) {
-            // This line was calling findByDepartmentId, changed to findByDepartment_Id
             employees = employeeRepository.findByDepartment_Id(departmentId);
         } else if (joinDateStart != null && joinDateEnd != null) {
             employees = employeeRepository.findByJoinDateBetween(joinDateStart, joinDateEnd);

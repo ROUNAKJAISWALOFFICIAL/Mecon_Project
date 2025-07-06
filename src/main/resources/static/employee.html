@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Employee Dashboard - Asset Management</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-    /* General reset */
+  <style>
 * {
   margin: 0;
   padding: 0;
@@ -128,8 +127,7 @@ body {
   .header h1 {
     margin-bottom: 10px;
   }
-}
-</style>
+}  </style>
 </head>
 <body>
   <aside class="sidebar">
@@ -143,23 +141,26 @@ body {
         <li><i class="fas fa-file-signature"></i> Request Asset</li>
         <li><i class="fas fa-undo"></i> Return Request</li>
         <li><i class="fas fa-history"></i> Usage History</li>
-        <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+<li>
+  <i class="fas fa-sign-out-alt"></i>
+  <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
+</li>
       </ul>
     </nav>
   </aside>
 
   <main class="main-content">
     <header class="header">
-      <h1>Welcome, Shubham</h1>
+      <h1>Welcome, <span id="emp-name">...</span></h1>
       <div class="user-info">
-        <i class="fas fa-user-circle"></i> Employee ID: EMP1234
+        <i class="fas fa-user-circle"></i> Employee ID: <span id="emp-id">...</span>
       </div>
     </header>
 
     <section class="dashboard">
       <div class="card">
         <h3>Assets Assigned</h3>
-        <p class="value">3</p>
+        <p class="value" id="assigned-assets-count">0</p>
       </div>
       <div class="card">
         <h3>Pending Requests</h3>
@@ -170,10 +171,34 @@ body {
         <p class="value">5</p>
       </div>
       <div class="card">
-        <h3> Service Queue</h3>
+        <h3>Service Queue</h3>
         <p class="value">2</p>
       </div>
     </section>
   </main>
+
+  <!-- ✅ Add script at the bottom -->
+  <script>
+    fetch("/api/employees/current")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Unauthorized or session expired");
+        }
+        return response.json();
+      })
+      .then(employee => {
+        document.getElementById("emp-name").textContent = employee.name;
+        document.getElementById("emp-id").textContent = "EMP" + employee.id;
+
+        // If assignedAssets are available, count them
+        if (employee.assignedAssets) {
+          document.getElementById("assigned-assets-count").textContent = employee.assignedAssets.length;
+        }
+      })
+      .catch(err => {
+        alert("Session expired or not authorized. Redirecting to login...");
+        window.location.href = "/index.html";
+      });
+  </script>
 </body>
 </html>

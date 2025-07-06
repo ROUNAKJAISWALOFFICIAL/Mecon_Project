@@ -14,7 +14,8 @@
     import jakarta.persistence.JoinColumn;
     import jakarta.persistence.ManyToOne;
     import jakarta.persistence.OneToMany;
-    import jakarta.persistence.Table; // Good practice to explicitly define @Table
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table; // Good practice to explicitly define @Table
 
     @Entity
     @Table(name = "employee") // Added for clarity, assuming your table name is 'employees'
@@ -34,12 +35,13 @@
         @JoinColumn(name = "department_id")
         @JsonBackReference // Correctly manages serialization of the Department relationship
         private Department department;
-
+        
+        @OneToOne(mappedBy = "employee")
+        private User user;
         @OneToMany(mappedBy = "assignTo")
         @JsonManagedReference // Correctly manages the JPA bidirectional relationship
         @JsonIgnore
         private List<Asset> assignedAssets;
-
         // Constructors
         public Employee() {}
 

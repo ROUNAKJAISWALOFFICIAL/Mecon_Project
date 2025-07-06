@@ -1,12 +1,8 @@
 package com.asset.asset_management.controller;
 
-import com.asset.asset_management.model.AssetCategoryDTO;
-import com.asset.asset_management.model.AssetReport;
-import com.asset.asset_management.model.DepartmentDTO;
-import com.asset.asset_management.model.EmployeeDTO;
-import com.asset.asset_management.model.EmployeeReportDTO;
-import com.asset.asset_management.service.ReportService;
-import com.itextpdf.text.DocumentException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
+import com.asset.asset_management.model.AssetCategoryDTO;
+import com.asset.asset_management.model.AssetReport;
+import com.asset.asset_management.model.DepartmentDTO;
+import com.asset.asset_management.model.EmployeeDTO;
+import com.asset.asset_management.model.EmployeeReportDTO;
+import com.asset.asset_management.service.ReportService;
+import com.itextpdf.text.DocumentException;
 
 @RestController
 @RequestMapping("/api") // Keep this base mapping
@@ -121,4 +121,5 @@ public class MasterDataController {
             return ResponseEntity.status(500).body(null);
         }
     }
+    
 }
