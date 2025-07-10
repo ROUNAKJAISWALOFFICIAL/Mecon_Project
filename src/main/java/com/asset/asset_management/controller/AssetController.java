@@ -105,21 +105,25 @@ public class AssetController {
         }
     }
 
-    @PutMapping("/unassign/{assetId}")
-    public ResponseEntity<?> unassignAsset(@PathVariable Long assetId) {
-        Optional<Asset> assetOpt = assetRepo.findById(assetId);
+   @PutMapping("/{id}/status")
+public ResponseEntity<Asset> updateAssetStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    String newStatus = body.get("status");
+    Optional<Asset> optionalAsset = assetRepo.findById(id);
 
-        if (assetOpt.isPresent()) {
-            Asset asset = assetOpt.get();
+    if (optionalAsset.isPresent()) {
+        Asset asset = optionalAsset.get();
+        asset.setStatus(newStatus);
+
+        // ❗Unassign employee if returning or sending for maintenance
+        if ("Available".equalsIgnoreCase(newStatus) || "Under Maintenance".equalsIgnoreCase(newStatus)) {
             asset.setAssignTo(null);
-
-            // ✅ Revert status
-            asset.setStatus("available");
-
-            assetRepo.save(asset);
-            return ResponseEntity.ok(Map.of("message", "Asset unassigned successfully."));
-        } else {
-            return ResponseEntity.badRequest().body(Map.of("message", "Asset not found."));
         }
+
+        assetRepo.save(asset);
+        return ResponseEntity.ok(asset);
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
+
     }

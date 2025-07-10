@@ -503,6 +503,21 @@
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
         crossorigin="anonymous"></script>
     <script>
+       fetch("/api/current-admin")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Unauthorized or session expired");
+      }
+      return response.text();
+    })
+    .then(data => {
+      console.log("Admin session is active.");
+      // You can continue loading admin-specific data here
+    })
+    .catch(error => {
+      alert("Session expired or unauthorized. Redirecting to login...");
+      window.location.href = "/index.html";
+    });
     // Global variable to store active link for highlighting
 let activeSidebarLink = document.getElementById("dashboard-link");
 

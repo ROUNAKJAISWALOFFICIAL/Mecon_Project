@@ -1,6 +1,8 @@
 package com.asset.asset_management.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +39,17 @@ public String login(@RequestParam String username, @RequestParam String password
 
     return "redirect:/index.html?error=true";
 }
+@GetMapping("/api/current-admin")
+public ResponseEntity<?> getCurrentLoggedInAdmin(HttpSession session) {
+    String role = (String) session.getAttribute("userRole");
+
+    if ("ADMIN".equalsIgnoreCase(role)) {
+        return ResponseEntity.ok("Admin session active");
+    } else {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired or not logged in as admin");
+    }
+}
+
 @GetMapping("/logout")
 public String logout(HttpSession session) {
     session.invalidate(); // Destroys all session attributes
