@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IT Asset Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: #f4f7fa;
+      color: #333;
+    }
+    header {
+      background-color: #2b6777;
+      color: white;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 24px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 500;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .hero {
+      text-align: center;
+      padding: 100px 20px;
+      background: #c8e0e7;
+    }
+    .hero h2 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .hero a.button {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: #2b6777;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      padding: 60px 40px;
+      background: white;
+    }
+    .feature-box {
+      background: #e4f1f7;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .feature-box h3 {
+      margin-bottom: 15px;
+      color: #2b6777;
+    }
+    .feature-box p {
+      font-size: 15px;
+    }
+    footer {
+      text-align: center;
+      background: #2b6777;
+      color: white;
+      padding: 15px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .hero h2 {
+        font-size: 28px;
+      }
+      .hero p {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Asset Manager</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/index">Login</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <img src="/image/MECON-01.png" alt="logo image" style="width: 150px; height: auto;">
+    <h2>Welcome to the IT Asset Management System</h2>
+    <p>Manage your organization's hardware and software assets efficiently and securely. Track, assign, and maintain all assets in one place.</p>
+    <a href="/index" class="button">Go to Login</a>
+  </section>
+
+  <section class="features">
+    <div class="feature-box">
+      <h3>Asset Tracking</h3>
+      <p>Track all IT assets including laptops, monitors, software licenses, and more.</p>
+    </div>
+    <div class="feature-box">
+      <h3>Assignment Logs</h3>
+      <p>Maintain records of which assets are assigned to which employees and their status.</p>
+    </div>
+    <div class="feature-box">
+      <h3>Return & Request</h3>
+      <p>Request new assets or return issued ones through a seamless interface.</p>
+    </div>
+    <div class="feature-box">
+      <h3>Reports & Analytics</h3>
+      <p>Generate reports for asset usage, depreciation, and availability.</p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Asset Manager System | Built with ❤️ by Our Team
+  </footer>
+
+</body>
+</html>
