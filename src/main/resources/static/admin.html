@@ -2178,6 +2178,61 @@ const fullPdfUrl = `${baseUrl}${pdfDownloadUrl}${queryString ? "?" + queryString
             alert("Error loading asset requests: " + err.message);
           });
       }
+      function assignFromRequest(requestId, employeeId, categoryId) {
+  const assetSelect = document.getElementById(`asset-select-${requestId}`);
+  const selectedAssetId = assetSelect.value;
+
+  if (!selectedAssetId) {
+    alert("Please select an asset before approving the request.");
+    return;
+  }
+
+  const payload = {
+    requestId: requestId,
+    employeeId: employeeId,
+    assetId: selectedAssetId
+  };
+
+  fetch("https://mecon-project.onrender.com/api/asset-requests/approve", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to approve request");
+      return res.text();
+    })
+    .then((msg) => {
+      alert("Request approved and asset assigned.");
+      loadAssetRequests();
+      loadRequestHistory();
+    })
+    .catch((err) => {
+      console.error("Error approving request:", err);
+      alert("Error approving request.");
+    });
+}
+function handleRequest(requestId, status) {
+  fetch(`https://mecon-project.onrender.com/api/asset-requests/${requestId}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: status })
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to update request status");
+      return res.text();
+    })
+    .then((msg) => {
+      alert(`Request ${status.toLowerCase()}.`);
+      loadAssetRequests();
+      loadRequestHistory();
+    })
+    .catch((err) => {
+      console.error("Error updating request status:", err);
+      alert("Failed to update request.");
+    });
+}
+
       function loadRequestHistory() {
         fetch("/api/asset-requests/all")
           .then((res) => {
