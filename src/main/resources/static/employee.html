@@ -247,6 +247,10 @@ td.rejected {
   color: red;
   font-weight: bold;
 }
+td.pending {
+  color: orange;
+  font-weight: bold;
+}
 
 /* Optional: Hover effect */
 .request-history-table tbody tr:hover {
@@ -533,7 +537,7 @@ td.rejected {
         const myRequests = requests.filter(
           (req) =>
             Number(req.employeeId) === Number(employeeId) &&
-            (req.status === "Accepted" || req.status === "Rejected")
+            (req.status === "Accepted" || req.status === "Rejected"|| req.status === "Pending")
         );
 
         if (myRequests.length === 0) {
