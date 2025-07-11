@@ -639,6 +639,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
+      const baseUrl = "https://mecon-project.onrender.com";
       fetch("/api/current-admin")
         .then((response) => {
           if (!response.ok) {
@@ -746,7 +747,7 @@
        */
       async function loadDashboardData() {
         try {
-          const res = await fetch("http://localhost:8080/api/dashboard");
+  const res = await fetch(`${baseUrl}/api/dashboard`);
           if (!res.ok) {
             throw new Error(
               `Failed to fetch dashboard data: ${res.statusText}`
@@ -1450,9 +1451,8 @@
           "flex";
 
         try {
-          const res = await fetch(
-            `http://localhost:8080/api/employees/department/${departmentId}`
-          );
+  const res = await fetch(`${baseUrl}/api/employees/department/${departmentId}`);
+
           if (!res.ok) throw new Error("Failed to fetch employees");
           allEmployees = await res.json();
           displayEmployees(allEmployees);
@@ -1569,7 +1569,7 @@
           };
 
           try {
-            const res = await fetch("http://localhost:8080/api/employees", {
+            const res = await fetch(`${baseUrl}/api/employees`,{
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(emp),
@@ -1992,10 +1992,8 @@
             }
           }
 
-          const queryString = $.param(queryParams);
-          const fullPdfUrl = `http://localhost:8080${pdfDownloadUrl}${
-            queryString ? "?" + queryString : ""
-          }`;
+const queryString = $.param(queryParams);
+const fullPdfUrl = `${baseUrl}${pdfDownloadUrl}${queryString ? "?" + queryString : ""}`;
 
           console.log("Attempting to download PDF from URL:", fullPdfUrl);
 
