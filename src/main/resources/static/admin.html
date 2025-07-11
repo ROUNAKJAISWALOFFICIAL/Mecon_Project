@@ -163,35 +163,39 @@
     <main class="content">
       <!-- Dashboard -->
       <section
-        id="dashboard"
-        class="section active"
-        aria-labelledby="dashboard-heading"
-      >
-        <h1 id="dashboard-heading">Dashboard</h1>
-        <p>
-          Welcome to your Asset Management Dashboard! Here you can get an
-          overview of your assets and their statuses.
-        </p>
+  id="dashboard"
+  class="section active"
+  aria-labelledby="dashboard-heading"
+>
+  <h1 id="dashboard-heading">Dashboard</h1>
+  <p>
+    Welcome to your Asset Management Dashboard! Here you can get an
+    overview of your assets and their statuses.
+  </p>
 
-        <div id="dashboardSummary" class="dashboard-cards">
-          <div class="dashcard">
-            Total Assets: <span id="totalAssets">Loading...</span>
-          </div>
-          <div class="dashcard">
-            Available Assets: <span id="availableAssets">Loading...</span>
-          </div>
-          <div class="dashcard">
-            Assigned Assets: <span id="assignedAssets">Loading...</span>
-          </div>
-          <div class="dashcard">
-            Assets in Maintenance:
-            <span id="assetsInMaintenance">Loading...</span>
-          </div>
-          <div class="dashcard">
-            Total Employees: <span id="totalEmployees">Loading...</span>
-          </div>
-        </div>
-      </section>
+  <div id="dashboardSummary" class="dashboard-cards">
+    <div class="dashcard">
+      Total Assets: <span id="totalAssets">Loading...</span>
+    </div>
+    <div class="dashcard">
+      Available Assets: <span id="availableAssets">Loading...</span>
+    </div>
+    <div class="dashcard">
+      Assigned Assets: <span id="assignedAssets">Loading...</span>
+    </div>
+    <div class="dashcard">
+      Assets in Maintenance:
+      <span id="assetsInMaintenance">Loading...</span>
+    </div>
+    <div class="dashcard">
+      Total Employees: <span id="totalEmployees">Loading...</span>
+    </div>
+<div class="dashcard">
+  Pending Requests: <span id="pendingRequests">Loading...</span>
+</div>
+  </div>
+</section>
+
       <!-- Manage assets -->
       <section
         id="manageAssets"
@@ -745,34 +749,32 @@
       /**
        * Fetches dashboard data from the backend API and updates the HTML.
        */
-      async function loadDashboardData() {
-        try {
-  const res = await fetch(`${baseUrl}/api/dashboard`);
-          if (!res.ok) {
-            throw new Error(
-              `Failed to fetch dashboard data: ${res.statusText}`
-            );
-          }
+async function loadDashboardData() {
+  try {
+    const res = await fetch(`${baseUrl}/api/dashboard`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dashboard data: ${res.statusText}`);
+    }
 
-          const data = await res.json();
-          document.getElementById("totalAssets").textContent = data.totalAssets;
-          document.getElementById("assignedAssets").textContent =
-            data.assignedAssets;
-          document.getElementById("availableAssets").textContent =
-            data.availableAssets;
-          document.getElementById("assetsInMaintenance").textContent =
-            data.assetsInMaintenance;
-          document.getElementById("totalEmployees").textContent =
-            data.totalEmployees;
-        } catch (err) {
-          console.error("Dashboard fetch error:", err);
-          const dashboardSummary = document.getElementById("dashboardSummary");
-          if (dashboardSummary) {
-            dashboardSummary.innerHTML =
-              "<p style='color: red; text-align: center;'>Error loading dashboard data. Please try again later.</p>";
-          }
-        }
-      }
+    const data = await res.json();
+
+    document.getElementById("totalAssets").textContent = data.totalAssets;
+    document.getElementById("assignedAssets").textContent = data.assignedAssets;
+    document.getElementById("availableAssets").textContent = data.availableAssets;
+    document.getElementById("assetsInMaintenance").textContent = data.assetsInMaintenance;
+    document.getElementById("totalEmployees").textContent = data.totalEmployees;
+    document.getElementById("pendingRequests").textContent = data.pendingRequests;
+
+  } catch (err) {
+    console.error("Dashboard fetch error:", err);
+    const dashboardSummary = document.getElementById("dashboardSummary");
+    if (dashboardSummary) {
+      dashboardSummary.innerHTML =
+        "<p style='color: red; text-align: center;'>Error loading dashboard data. Please try again later.</p>";
+    }
+  }
+}
+
 
       /**
        * Returns the appropriate Font Awesome icon class for a given asset category name.
