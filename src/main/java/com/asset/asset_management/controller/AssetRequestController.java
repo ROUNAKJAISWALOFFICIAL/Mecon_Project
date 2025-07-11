@@ -1,18 +1,31 @@
 package com.asset.asset_management.controller;
 
-import com.asset.asset_management.entities.AssetRequest;
-import com.asset.asset_management.entities.Employee;
-import com.asset.asset_management.entities.AssetCategory;
-import com.asset.asset_management.interfaces.AssetRequestRepository;
-import com.asset.asset_management.interfaces.EmployeeRepository;
-import com.asset.asset_management.interfaces.AssetCategoryRepository;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import com.asset.asset_management.entities.Asset;
+import com.asset.asset_management.entities.AssetCategory;
+import com.asset.asset_management.entities.AssetRequest;
+import com.asset.asset_management.entities.Employee;
+import com.asset.asset_management.interfaces.AssetCategoryRepository;
+import com.asset.asset_management.interfaces.AssetRepository;
+import com.asset.asset_management.interfaces.AssetRequestRepository;
+import com.asset.asset_management.interfaces.EmployeeRepository;
 
 @RestController
 @RequestMapping("/api/asset-requests")
@@ -27,7 +40,10 @@ public class AssetRequestController {
     @Autowired
     private AssetCategoryRepository categoryRepo;
 
-    // ✅ 1. Save asset request (already correct)
+    @Autowired
+    private AssetRepository assetRepo;
+
+    // ✅ 1. Save asset request
     @PostMapping
     public AssetRequest requestAsset(@RequestBody RequestDTO dto) {
         Employee emp = employeeRepo.findById(dto.employeeId()).orElseThrow();
@@ -41,26 +57,25 @@ public class AssetRequestController {
         return requestRepo.save(req);
     }
 
-    // ✅ 2. Return mapped list with readable fields for admin view
-@GetMapping("/all")
-public List<Map<String, Object>> getAllRequestsForAdmin() {
-    List<AssetRequest> requests = requestRepo.findAll();
+    // ✅ 2. Return mapped list for admin
+    @GetMapping("/all")
+    public List<Map<String, Object>> getAllRequestsForAdmin() {
+        List<AssetRequest> requests = requestRepo.findAll();
 
-    return requests.stream().map(req -> {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", req.getId());
-        map.put("employeeId", req.getEmployee().getId()); // 👈 ADD
-        map.put("employeeName", req.getEmployee().getName());
-        map.put("categoryId", req.getCategory().getId()); // 👈 ADD
-        map.put("categoryName", req.getCategory().getName());
-        map.put("requestDate", req.getRequestDate());
-        map.put("status", req.getStatus());
-        return map;
-    }).toList();
-}
+        return requests.stream().map(req -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", req.getId());
+            map.put("employeeId", req.getEmployee().getId());
+            map.put("employeeName", req.getEmployee().getName());
+            map.put("categoryId", req.getCategory().getId());
+            map.put("categoryName", req.getCategory().getName());
+            map.put("requestDate", req.getRequestDate());
+            map.put("status", req.getStatus());
+            return map;
+        }).toList();
+    }
 
-
-    // ✅ 3. Update request status (Assign or Reject)
+    // ✅ 3. Update status (Accepted / Rejected)
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam String status) {
         Optional<AssetRequest> optional = requestRepo.findById(id);
@@ -74,6 +89,69 @@ public List<Map<String, Object>> getAllRequestsForAdmin() {
         }
     }
 
-    // ✅ DTO class for request input
+    // ✅ 4. Assign asset & approve request
+    @PostMapping("/assign")
+    public ResponseEntity<String> assignAssetToEmployee(@RequestBody AssignAssetRequest req) {
+        Optional<AssetRequest> requestOpt = requestRepo.findById(req.getRequestId());
+        if (requestOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Request not found");
+        }
+
+        Optional<Asset> assetOpt = assetRepo.findById(req.getAssetId());
+        if (assetOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Asset not found");
+        }
+
+        Optional<Employee> empOpt = employeeRepo.findById(req.getEmployeeId());
+        if (empOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+        }
+
+        // Assign asset to employee
+        Asset asset = assetOpt.get();
+        asset.setAssignTo(empOpt.get());
+        asset.setStatus("Assigned");
+        assetRepo.save(asset);
+
+        // Update request status
+        AssetRequest assetRequest = requestOpt.get();
+        assetRequest.setStatus("Accepted");
+        requestRepo.save(assetRequest);
+
+        return ResponseEntity.ok("Asset assigned and request approved");
+    }
+
+    // ✅ 5. DTO for creating a request
     public record RequestDTO(Long employeeId, Long categoryId) {}
+
+    // ✅ 6. DTO for approving request and assigning asset
+    public static class AssignAssetRequest {
+        private Long requestId;
+        private Long employeeId;
+        private Long assetId;
+
+        public Long getRequestId() {
+            return requestId;
+        }
+
+        public void setRequestId(Long requestId) {
+            this.requestId = requestId;
+        }
+
+        public Long getEmployeeId() {
+            return employeeId;
+        }
+
+        public void setEmployeeId(Long employeeId) {
+            this.employeeId = employeeId;
+        }
+
+        public Long getAssetId() {
+            return assetId;
+        }
+
+        public void setAssetId(Long assetId) {
+            this.assetId = assetId;
+        }
+    }
 }
