@@ -639,7 +639,6 @@
       crossorigin="anonymous"
     ></script>
     <script>
-const baseUrl = "https://mecon-project.onrender.com";
       fetch("/api/current-admin")
         .then((response) => {
           if (!response.ok) {
@@ -745,13 +744,15 @@ const baseUrl = "https://mecon-project.onrender.com";
       /**
        * Fetches dashboard data from the backend API and updates the HTML.
        */
-     async function loadDashboardData() {
-  try {
-const res = await fetch(`${baseUrl}/api/dashboard`);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch dashboard data: ${res.statusText}`);
-    }
- 
+      async function loadDashboardData() {
+        try {
+          const res = await fetch("http://localhost:8080/api/dashboard");
+          if (!res.ok) {
+            throw new Error(
+              `Failed to fetch dashboard data: ${res.statusText}`
+            );
+          }
+
           const data = await res.json();
           document.getElementById("totalAssets").textContent = data.totalAssets;
           document.getElementById("assignedAssets").textContent =
@@ -1443,21 +1444,24 @@ const res = await fetch(`${baseUrl}/api/dashboard`);
         }
       }
 
-    async function loadEmployees(departmentId) {
-  selectedDepartmentId = departmentId;
-  document.getElementById("employeeFilterControls").style.display = "flex";
+      async function loadEmployees(departmentId) {
+        selectedDepartmentId = departmentId;
+        document.getElementById("employeeFilterControls").style.display =
+          "flex";
 
-  try {
-    const res = await fetch(`${baseUrl}/api/employees/department/${departmentId}`);
-    if (!res.ok) throw new Error("Failed to fetch employees");
-    allEmployees = await res.json();
-    displayEmployees(allEmployees);
-  } catch (err) {
-    console.error("Error loading employees:", err);
-    document.getElementById("employeeListTable").innerHTML =
-      "<p>Error loading employees. Please try again later.</p>";
-  }
-}
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/employees/department/${departmentId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch employees");
+          allEmployees = await res.json();
+          displayEmployees(allEmployees);
+        } catch (err) {
+          console.error("Error loading employees:", err);
+          document.getElementById("employeeListTable").innerHTML =
+            "<p>Error loading employees. Please try again later.</p>";
+        }
+      }
 
       function displayEmployees(employeeList) {
         const tableDiv = document.getElementById("employeeListTable");
@@ -1564,12 +1568,12 @@ const res = await fetch(`${baseUrl}/api/dashboard`);
             },
           };
 
-         try {
-  const res = await fetch(`${baseUrl}/api/employees`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(emp),
-  });
+          try {
+            const res = await fetch("http://localhost:8080/api/employees", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(emp),
+            });
             if (!res.ok) throw new Error("Failed to add employee");
             // Reload employees for the currently selected department to show the new one
             if (selectedDepartmentId) {
@@ -1988,8 +1992,10 @@ const res = await fetch(`${baseUrl}/api/dashboard`);
             }
           }
 
-const queryString = $.param(queryParams);
-const fullPdfUrl = `${baseUrl}${pdfDownloadUrl}${queryString ? "?" + queryString : ""}`;
+          const queryString = $.param(queryParams);
+          const fullPdfUrl = `http://localhost:8080${pdfDownloadUrl}${
+            queryString ? "?" + queryString : ""
+          }`;
 
           console.log("Attempting to download PDF from URL:", fullPdfUrl);
 
@@ -2178,58 +2184,60 @@ const fullPdfUrl = `${baseUrl}${pdfDownloadUrl}${queryString ? "?" + queryString
             alert("Error loading asset requests: " + err.message);
           });
       }
-      function assignFromRequest(requestId, employeeId, categoryId) {
+function assignFromRequest(requestId, employeeId, categoryId) {
   const assetSelect = document.getElementById(`asset-select-${requestId}`);
   const selectedAssetId = assetSelect.value;
 
   if (!selectedAssetId) {
-    alert("Please select an asset before approving the request.");
+    alert("Please select an asset before approving.");
     return;
   }
 
-  const payload = {
-    requestId: requestId,
-    employeeId: employeeId,
-    assetId: selectedAssetId
-  };
-
-  fetch("https://mecon-project.onrender.com/api/asset-requests/approve", {
+  fetch("/api/asset-requests/assign", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      requestId: requestId,
+      assetId: selectedAssetId,
+      employeeId: employeeId,
+    }),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Failed to approve request");
-      return res.text();
+      if (!res.ok) throw new Error("Failed to assign asset");
+      return res.text(); // ✅ Use text if backend returns plain text
     })
-    .then((msg) => {
-      alert("Request approved and asset assigned.");
+    .then((message) => {
+      alert(message); // Show success message from backend
       loadAssetRequests();
       loadRequestHistory();
     })
     .catch((err) => {
-      console.error("Error approving request:", err);
-      alert("Error approving request.");
+      alert("Error assigning asset: " + err.message);
     });
 }
+
 function handleRequest(requestId, status) {
-  fetch(`https://mecon-project.onrender.com/api/asset-requests/${requestId}/status`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: status })
+  fetch(`/api/asset-requests/${requestId}/status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status: status }),
   })
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to update request status");
-      return res.text();
-    })
-    .then((msg) => {
-      alert(`Request ${status.toLowerCase()}.`);
-      loadAssetRequests();
-      loadRequestHistory();
-    })
+.then((res) => {
+  if (!res.ok) throw new Error("Failed to update request");
+  return res.text(); // ✅ read as plain text
+})
+.then((message) => {
+  alert(message); // show the success message from backend
+  loadAssetRequests();
+  loadRequestHistory();
+})
+
     .catch((err) => {
-      console.error("Error updating request status:", err);
-      alert("Failed to update request.");
+      alert("Error updating request: " + err.message);
     });
 }
 

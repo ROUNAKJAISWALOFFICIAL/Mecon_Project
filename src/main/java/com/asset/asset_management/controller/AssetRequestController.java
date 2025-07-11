@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.asset.asset_management.entities.Asset;
@@ -76,18 +75,20 @@ public class AssetRequestController {
     }
 
     // ✅ 3. Update status (Accepted / Rejected)
-    @PutMapping("/{id}/status")
-    public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam String status) {
-        Optional<AssetRequest> optional = requestRepo.findById(id);
-        if (optional.isPresent()) {
-            AssetRequest req = optional.get();
-            req.setStatus(status);
-            requestRepo.save(req);
-            return ResponseEntity.ok("Status updated to " + status);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Request not found");
-        }
+@PutMapping("/{id}/status")
+public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
+    Optional<AssetRequest> optional = requestRepo.findById(id);
+    if (optional.isPresent()) {
+        AssetRequest req = optional.get();
+        String status = requestBody.get("status"); // read from JSON
+        req.setStatus(status);
+        requestRepo.save(req);
+        return ResponseEntity.ok("Status updated to " + status);
+    } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Request not found");
     }
+}
+
 
     // ✅ 4. Assign asset & approve request
     @PostMapping("/assign")
