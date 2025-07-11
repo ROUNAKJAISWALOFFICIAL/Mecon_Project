@@ -639,6 +639,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
+const baseUrl = "https://mecon-project.onrender.com";
       fetch("/api/current-admin")
         .then((response) => {
           if (!response.ok) {
@@ -744,15 +745,13 @@
       /**
        * Fetches dashboard data from the backend API and updates the HTML.
        */
-      async function loadDashboardData() {
-        try {
-          const res = await fetch("http://localhost:8080/api/dashboard");
-          if (!res.ok) {
-            throw new Error(
-              `Failed to fetch dashboard data: ${res.statusText}`
-            );
-          }
-
+     async function loadDashboardData() {
+  try {
+const res = await fetch(`${baseUrl}/api/dashboard`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch dashboard data: ${res.statusText}`);
+    }
+ 
           const data = await res.json();
           document.getElementById("totalAssets").textContent = data.totalAssets;
           document.getElementById("assignedAssets").textContent =
@@ -1444,24 +1443,21 @@
         }
       }
 
-      async function loadEmployees(departmentId) {
-        selectedDepartmentId = departmentId;
-        document.getElementById("employeeFilterControls").style.display =
-          "flex";
+    async function loadEmployees(departmentId) {
+  selectedDepartmentId = departmentId;
+  document.getElementById("employeeFilterControls").style.display = "flex";
 
-        try {
-          const res = await fetch(
-            `http://localhost:8080/api/employees/department/${departmentId}`
-          );
-          if (!res.ok) throw new Error("Failed to fetch employees");
-          allEmployees = await res.json();
-          displayEmployees(allEmployees);
-        } catch (err) {
-          console.error("Error loading employees:", err);
-          document.getElementById("employeeListTable").innerHTML =
-            "<p>Error loading employees. Please try again later.</p>";
-        }
-      }
+  try {
+    const res = await fetch(`${baseUrl}/api/employees/department/${departmentId}`);
+    if (!res.ok) throw new Error("Failed to fetch employees");
+    allEmployees = await res.json();
+    displayEmployees(allEmployees);
+  } catch (err) {
+    console.error("Error loading employees:", err);
+    document.getElementById("employeeListTable").innerHTML =
+      "<p>Error loading employees. Please try again later.</p>";
+  }
+}
 
       function displayEmployees(employeeList) {
         const tableDiv = document.getElementById("employeeListTable");
@@ -1568,12 +1564,12 @@
             },
           };
 
-          try {
-            const res = await fetch("http://localhost:8080/api/employees", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(emp),
-            });
+         try {
+  const res = await fetch(`${baseUrl}/api/employees`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(emp),
+  });
             if (!res.ok) throw new Error("Failed to add employee");
             // Reload employees for the currently selected department to show the new one
             if (selectedDepartmentId) {
@@ -1992,10 +1988,8 @@
             }
           }
 
-          const queryString = $.param(queryParams);
-          const fullPdfUrl = `http://localhost:8080${pdfDownloadUrl}${
-            queryString ? "?" + queryString : ""
-          }`;
+const queryString = $.param(queryParams);
+const fullPdfUrl = `${baseUrl}${pdfDownloadUrl}${queryString ? "?" + queryString : ""}`;
 
           console.log("Attempting to download PDF from URL:", fullPdfUrl);
 
