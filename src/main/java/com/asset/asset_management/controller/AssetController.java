@@ -104,6 +104,10 @@ public class AssetController {
             return ResponseEntity.badRequest().body(Map.of("message", "Invalid asset or employee ID."));
         }
     }
+@GetMapping("/available-by-category/{categoryId}")
+public List<Asset> getAvailableAssetsByCategory(@PathVariable Long categoryId) {
+    return assetRepo.findByCategory_IdAndAssignToIsNullAndStatusIgnoreCase(categoryId, "Available");
+}
 
    @PutMapping("/{id}/status")
 public ResponseEntity<Asset> updateAssetStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {

@@ -189,7 +189,7 @@
 }
 
 #request-asset-section button {
-  background-color: #3498db;
+  background-color:  #1d3557;
   color: white;
   padding: 10px 18px;
   border: none;
@@ -200,7 +200,89 @@
 }
 
 #request-asset-section button:hover {
-  background-color: #2980b9;
+  background-color:  #254470;
+}
+#employee-request-history-section {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#employee-request-history-section h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.request-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.request-history-table th,
+.request-history-table td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.request-history-table thead {
+  background-color:  #1d3557;
+  color: white;
+}
+
+.request-history-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* ✅ Status coloring */
+td.accepted {
+  color: green;
+  font-weight: bold;
+}
+
+td.rejected {
+  color: red;
+  font-weight: bold;
+}
+
+/* Optional: Hover effect */
+.request-history-table tbody tr:hover {
+  background-color: #e9f5ff;
+  cursor: default;
+}
+/* Common button base style */
+.asset-table button {
+  padding: 8px 14px;
+  margin: 0 4px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+/* Return button - green */
+.asset-table button:nth-child(1) {
+  background-color: #28a745;
+  color: white;
+}
+
+.asset-table button:nth-child(1):hover {
+  background-color: #218838;
+}
+
+/* Maintenance button - orange */
+.asset-table button:nth-child(2) {
+  background-color: #fd7e14;
+  color: white;
+}
+
+.asset-table button:nth-child(2):hover {
+  background-color: #e46b10;
 }
 
     </style>
@@ -214,6 +296,7 @@
       <ul>
         <li onclick="showDashboard()"><i class="fas fa-home"></i> Home</li>
         <li onclick="showRequestAsset()"><i class="fas fa-file-signature"></i> Request Asset</li>
+        <li onclick="showRequestHistory()"><i class="fa-solid fa-history"></i> Request History</li>
         <li>
           <i class="fas fa-sign-out-alt"></i>
           <a href="/logout" style="color: white; text-decoration: none;">Logout</a>
@@ -249,157 +332,232 @@
       </select>
       <button onclick="requestAsset()">Request</button>
     </section>
+<!-- Request History Section -->
+<section id="employee-request-history-section" style="display: none;">
+  <h2>My Asset Request History</h2>
+  <table class="request-history-table">
+    <thead>
+      <tr>
+        <th>Request ID</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="employeeRequestHistoryBody">
+      <!-- Populated by JS -->
+    </tbody>
+  </table>
+</section>
+
+
   </main>
 
   <script>
-    function showDashboard() {
-      document.getElementById("dashboard-section").style.display = "block";
-      document.getElementById("asset-details-section").style.display = "block";
-      document.getElementById("request-asset-section").style.display = "none";
-    }
+  let currentEmployeeId = null;
 
-    function showRequestAsset() {
-      document.getElementById("dashboard-section").style.display = "none";
-      document.getElementById("asset-details-section").style.display = "none";
-      document.getElementById("request-asset-section").style.display = "block";
-    }
+  function showDashboard() {
+    document.getElementById("dashboard-section").style.display = "block";
+    document.getElementById("asset-details-section").style.display = "block";
+    document.getElementById("request-asset-section").style.display = "none";
+    document.getElementById("employee-request-history-section").style.display = "none";
+  }
 
-    // Session validation and load employee info
-    fetch("/api/employees/current")
+  function showRequestAsset() {
+    document.getElementById("dashboard-section").style.display = "none";
+    document.getElementById("asset-details-section").style.display = "none";
+    document.getElementById("request-asset-section").style.display = "block";
+    document.getElementById("employee-request-history-section").style.display = "none";
+  }
+
+  function showRequestHistory() {
+    document.getElementById("dashboard-section").style.display = "none";
+    document.getElementById("asset-details-section").style.display = "none";
+    document.getElementById("request-asset-section").style.display = "none";
+    document.getElementById("employee-request-history-section").style.display = "block";
+
+    if (currentEmployeeId) {
+      loadEmployeeRequestHistory(currentEmployeeId);
+    } else {
+      alert("Could not load your request history. Please login again.");
+    }
+  }
+
+  // Load employee session info and assigned assets
+  fetch("/api/employees/current")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Unauthorized or session expired");
+      }
+      return response.json();
+    })
+    .then((employee) => {
+      currentEmployeeId = employee.id;
+
+      document.getElementById("emp-name").textContent = employee.name;
+      document.getElementById("emp-id").textContent = employee.id;
+
+      fetch(`/api/employees/${employee.id}/assigned-assets`)
+        .then((response) => response.json())
+        .then((assets) => {
+          document.getElementById("assigned-assets-count").textContent = assets.length;
+          const section = document.getElementById("asset-details-section");
+
+          if (assets.length === 0) {
+            section.innerHTML = `<p>No assets assigned to you.</p>`;
+            return;
+          }
+
+          let tableHtml = `
+            <h2>My Assigned Assets</h2>
+            <table class="asset-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Value</th>
+                  <th>Status</th>
+                  <th>Category</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          assets.forEach((asset) => {
+            tableHtml += `
+              <tr>
+                <td>${asset.id}</td>
+                <td>${asset.name}</td>
+                <td>${asset.description}</td>
+                <td>${asset.value}</td>
+                <td>${asset.status}</td>
+                <td>${asset.categoryName}</td>
+                <td>
+                  <button onclick="updateAssetStatus(${asset.id}, 'Available')">Return</button>
+                  <button onclick="updateAssetStatus(${asset.id}, 'Under Maintenance')">Maintenance</button>
+                </td>
+              </tr>
+            `;
+          });
+
+          tableHtml += `</tbody></table>`;
+          section.innerHTML = tableHtml;
+        });
+    })
+    .catch((err) => {
+      alert("Session expired or not authorized. Redirecting to login...");
+      window.location.href = "/index.html";
+    });
+
+  // Update asset status
+  function updateAssetStatus(assetId, newStatus) {
+    fetch(`/api/assets/${assetId}/status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: newStatus }),
+    })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Unauthorized or session expired");
+          throw new Error("Failed to update asset status");
         }
         return response.json();
       })
+      .then((updatedAsset) => {
+        alert(`Asset marked as ${updatedAsset.status}`);
+        location.reload();
+      })
+      .catch((error) => {
+        alert("Error: " + error.message);
+      });
+  }
+
+  // Fetch categories for asset request
+  fetch("/api/asset-categories")
+    .then((response) => response.json())
+    .then((categories) => {
+      const dropdown = document.getElementById("asset-category-select");
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.textContent = category.name;
+        dropdown.appendChild(option);
+      });
+    });
+
+  // Send asset request
+  function requestAsset() {
+    const categoryId = document.getElementById("asset-category-select").value;
+    if (!categoryId) {
+      alert("Please select a category.");
+      return;
+    }
+
+    fetch("/api/employees/current")
+      .then((response) => response.json())
       .then((employee) => {
-        document.getElementById("emp-name").textContent = employee.name;
-        document.getElementById("emp-id").textContent = employee.id;
+        return fetch("/api/asset-requests", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            employeeId: employee.id,
+            categoryId: categoryId,
+          }),
+        });
+      })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to send request");
+        alert("Asset request sent successfully!");
+      })
+      .catch((error) => {
+        alert("Error: " + error.message);
+      });
+  }
 
-        fetch(`/api/employees/${employee.id}/assigned-assets`)
-          .then((response) => response.json())
-          .then((assets) => {
-            document.getElementById("assigned-assets-count").textContent = assets.length;
-            const section = document.getElementById("asset-details-section");
+  // Load employee's request history
+  function loadEmployeeRequestHistory(employeeId) {
+    fetch("/api/asset-requests/all")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch requests");
+        return res.json();
+      })
+      .then((requests) => {
+        const container = document.getElementById("employeeRequestHistoryBody");
+        container.innerHTML = "";
 
-            if (assets.length === 0) {
-              section.innerHTML = `<p>No assets assigned to you.</p>`;
-              return;
-            }
+        const myRequests = requests.filter(
+          (req) =>
+            Number(req.employeeId) === Number(employeeId) &&
+            (req.status === "Accepted" || req.status === "Rejected")
+        );
 
-            let tableHtml = `
-              <h2>My Assigned Assets</h2>
-              <table class="asset-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Value</th>
-                    <th>Status</th>
-                    <th>Category</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-            `;
+        if (myRequests.length === 0) {
+          container.innerHTML =
+            "<tr><td colspan='4'>No request history found.</td></tr>";
+          return;
+        }
 
-            assets.forEach((asset) => {
-              tableHtml += `
-                <tr>
-                  <td>${asset.id}</td>
-                  <td>${asset.name}</td>
-                  <td>${asset.description}</td>
-                  <td>${asset.value}</td>
-                  <td>${asset.status}</td>
-                  <td>${asset.categoryName}</td>
-                  <td>
-                    <button onclick="updateAssetStatus(${asset.id}, 'Available')">Return</button>
-                    <button onclick="updateAssetStatus(${asset.id}, 'Under Maintenance')">Maintenance</button>
-                  </td>
-                </tr>
-              `;
-            });
-
-            tableHtml += `
-                </tbody>
-              </table>
-            `;
-
-            section.innerHTML = tableHtml;
-          });
+        myRequests.forEach((req) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${req.id}</td>
+            <td>${req.categoryName}</td>
+            <td>${new Date(req.requestDate).toLocaleString()}</td>
+            <td class="${req.status.toLowerCase()}">${req.status}</td>
+          `;
+          container.appendChild(row);
+        });
       })
       .catch((err) => {
-        alert("Session expired or not authorized. Redirecting to login...");
-        window.location.href = "/index.html";
+        alert("Error loading request history: " + err.message);
       });
+  }
+</script>
 
-    function updateAssetStatus(assetId, newStatus) {
-      fetch(`/api/assets/${assetId}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: newStatus }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to update asset status");
-          }
-          return response.json();
-        })
-        .then((updatedAsset) => {
-          alert(`Asset marked as ${updatedAsset.status}`);
-          location.reload();
-        })
-        .catch((error) => {
-          alert("Error: " + error.message);
-        });
-    }
-
-    // Fetch asset categories
-    fetch("/api/asset-categories")
-      .then((response) => response.json())
-      .then((categories) => {
-        const dropdown = document.getElementById("asset-category-select");
-        categories.forEach((category) => {
-          const option = document.createElement("option");
-          option.value = category.id;
-          option.textContent = category.name;
-          dropdown.appendChild(option);
-        });
-      });
-
-    // Request asset based on selected category
-    function requestAsset() {
-      const categoryId = document.getElementById("asset-category-select").value;
-      if (!categoryId) {
-        alert("Please select a category.");
-        return;
-      }
-
-      fetch("/api/employees/current")
-        .then((response) => response.json())
-        .then((employee) => {
-          return fetch("/api/asset-requests", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              employeeId: employee.id,
-              categoryId: categoryId,
-            }),
-          });
-        })
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to send request");
-          alert("Asset request sent successfully!");
-        })
-        .catch((error) => {
-          alert("Error: " + error.message);
-        });
-    }
-  </script>
 </body>
 </html>

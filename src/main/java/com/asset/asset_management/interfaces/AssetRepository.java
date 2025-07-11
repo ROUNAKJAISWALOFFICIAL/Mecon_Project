@@ -49,5 +49,6 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
     // Combinations of filters (these can get long, consider Specification API for more complexity)
     List<Asset> findByAssignTo_Department_IdAndCategory_IdAndStatusIgnoreCase(Long departmentId, Long categoryId, String status);
     List<Asset> findByAssignTo_Department_IdAndCategory_Id(Long departmentId, Long categoryId);
+List<Asset> findByCategory_IdAndAssignToIsNullAndStatusIgnoreCase(Long categoryId, String status);
 
 }
