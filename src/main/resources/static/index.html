@@ -2,43 +2,65 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Login - Mecon Asset System</title>
     <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
         font-family: Arial, sans-serif;
         background-color: #bbbbbb;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
+        padding: 20px;
       }
+
       .login-container {
         background-color: #fff;
         padding: 40px;
         border-radius: 15px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         text-align: center;
-        width: 300px;
+        width: 100%;
+        max-width: 400px;
       }
+
       .login-container h2 {
         color: #333;
-        font-size: 20px;
+        font-size: 22px;
+        margin-bottom: 20px;
       }
+
       .login-container img {
         height: 60px;
+        margin-bottom: 15px;
       }
+
       .login-container input {
         width: 100%;
         margin-top: 10px;
-        font-size: 15px;
-        border-radius: 3px;
-        border: 1px solid black;
-        padding: 6px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        transition: border-color 0.2s ease;
       }
+
+      .login-container input:focus {
+        outline: none;
+        border-color: #004080;
+      }
+
       .login-button {
         display: block;
         width: 100%;
-        margin: 10px 0;
+        margin-top: 20px;
         padding: 12px;
         background-color: #004080;
         color: white;
@@ -46,15 +68,33 @@
         border-radius: 8px;
         font-size: 16px;
         cursor: pointer;
-        text-decoration: none;
+        transition: background-color 0.3s ease;
       }
+
       .login-button:hover {
         background-color: #0059b3;
       }
+
       .error {
         color: red;
         font-size: 14px;
-        margin-top: 10px;
+        margin-top: 12px;
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 480px) {
+        .login-container {
+          padding: 25px 20px;
+        }
+
+        .login-container h2 {
+          font-size: 18px;
+        }
+
+        .login-container input,
+        .login-button {
+          font-size: 15px;
+        }
       }
     </style>
   </head>
@@ -70,7 +110,6 @@
 
       <!-- Optional error display -->
       <div class="error">
-        <!-- This shows only if redirected with error -->
         <script>
           const urlParams = new URLSearchParams(window.location.search);
           if (urlParams.get("error") === "true") {
