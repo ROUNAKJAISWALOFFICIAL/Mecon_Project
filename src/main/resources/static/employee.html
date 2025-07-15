@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Employee Dashboard - Asset Management</title>
+    <link rel="icon" href="/image/mecon_favicon.jpeg" type="image/jpeg">
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -374,10 +376,11 @@ td.pending {
         <span class="menu-text">Request History</span>
       </li>
 
-      <li onclick="setActiveMenu(this)">
-        <i class="fas fa-sign-out-alt"></i>
-        <a href="/logout" class="menu-text">Logout</a>
-      </li>
+<li onclick="logoutUser(); setActiveMenu(this);">
+  <i class="fas fa-sign-out-alt"></i>
+  <span class="menu-text">Logout</span>
+</li>
+
     </ul>
   </nav>
 </aside>
@@ -644,6 +647,21 @@ td.pending {
         alert("Error loading request history: " + err.message);
       });
   }
+  function logoutUser() {
+    
+  fetch("/logout")
+    .then(() => {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = "/index.html"; // Redirect to login
+      alert("Logging out...", "info");
+
+    })
+    .catch(() => {
+      alert("Error logging out. Please try again.");
+    });
+}
+
 </script>
 
 </body>
