@@ -3,7 +3,6 @@ package com.asset.asset_management.entities;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -26,7 +25,6 @@ public class AssetCategory {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonManagedReference // ✅ Matches @JsonBackReference in Asset
-    @JsonIgnore // <-- ADDED THIS: Prevents lazy initialization issues during serialization of AssetCategory
     private List<Asset> assets;
 
     public AssetCategory() {}
