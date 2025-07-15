@@ -55,7 +55,7 @@ This system supports both **Admin** and **Employee** panels, providing features 
 ### 📁 Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/asset-management-system.git
+git clone https://github.com/ROUNAKJAISWALOFFICIAL/Mecon_Project.git
 cd asset-management-system
 
 ## 📦 Build & Run Locally
