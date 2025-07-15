@@ -24,7 +24,7 @@ public class AssetCategory {
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    @JsonManagedReference // ✅ Matches @JsonBackReference in Asset
+    @JsonManagedReference 
     private List<Asset> assets;
 
     public AssetCategory() {}

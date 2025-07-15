@@ -95,7 +95,6 @@ public class AssetController {
             Asset asset = assetOpt.get();
             asset.setAssignTo(empOpt.get());
 
-            // ✅ Update status
             asset.setStatus("Assigned");
 
             assetRepo.save(asset);
@@ -118,7 +117,6 @@ public ResponseEntity<Asset> updateAssetStatus(@PathVariable Long id, @RequestBo
         Asset asset = optionalAsset.get();
         asset.setStatus(newStatus);
 
-        // ❗Unassign employee if returning or sending for maintenance
         if ("Available".equalsIgnoreCase(newStatus) || "Under Maintenance".equalsIgnoreCase(newStatus)) {
             asset.setAssignTo(null);
         }

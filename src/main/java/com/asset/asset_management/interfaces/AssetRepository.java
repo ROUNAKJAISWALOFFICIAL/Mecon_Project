@@ -1,4 +1,3 @@
-// src/main/java/com/asset/asset_management/interfaces/AssetRepository.java
 package com.asset.asset_management.interfaces;
 
 import java.util.List;
@@ -23,10 +22,10 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
     // Count assets by status
     long countByStatus(String status);
 
-    // (Optional) Get all assigned assets
+    // Get all assigned assets
     List<Asset> findByAssignToIsNotNull();
 
-    // (Optional) Get assets by status (like "available", "under maintenance")
+    //  Get assets by status (like "available", "under maintenance")
     List<Asset> findByStatusIgnoreCase(String status);
 
     // --- NEW METHODS FOR REPORTING FILTERS ---

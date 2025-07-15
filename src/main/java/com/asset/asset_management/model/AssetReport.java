@@ -1,4 +1,3 @@
-// src/main/java/com/asset/asset_management/dto/AssetReportDTO.java
 package com.asset.asset_management.model;
 
 import com.asset.asset_management.entities.Asset;
@@ -10,7 +9,7 @@ public class AssetReport {
     private String status;
     private String categoryName;
     private String assignedToEmployeeName;
-    private String departmentName; // Department of the employee the asset is assigned to
+    private String departmentName; 
 
     // Constructor to map from Asset entity
     public AssetReport(Asset asset) {
@@ -36,7 +35,6 @@ public class AssetReport {
     public String getAssignedToEmployeeName() { return assignedToEmployeeName; }
     public String getDepartmentName() { return departmentName; }
 
-    // Setters (if needed, but for DTOs from entity, usually only getters are enough)
     public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }

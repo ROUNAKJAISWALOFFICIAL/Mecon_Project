@@ -18,11 +18,6 @@ public class EmployeeAssetController {
     @Autowired
     private ReportService reportService;
 
-    /**
-     * Returns a list of assets assigned to the specified employee.
-     *
-     * Endpoint: GET /api/employees/{id}/assigned-assets
-     */
     @GetMapping("/{id}/assigned-assets")
     public List<AssetReport> getAssignedAssetsForEmployee(@PathVariable Long id) {
         return reportService.getAssetsAssignedToEmployee(id);

@@ -1,4 +1,3 @@
-// src/main/java/com/asset/asset_management/dto/AssignmentHistoryDTO.java
 package com.asset.asset_management.model;
 
 import com.asset.asset_management.entities.Asset;
@@ -12,7 +11,6 @@ public class AssignmentHistory {
     private String employeeDesignation;
     private String employeeEmail;
     private String departmentName;
-    // private LocalDate assignmentDate; // Add this if you track assignment date in Asset
 
     public AssignmentHistory(Asset asset) {
         this.assetId = asset.getId();
@@ -31,7 +29,6 @@ public class AssignmentHistory {
             this.employeeEmail = "N/A";
             this.departmentName = "N/A";
         }
-        // this.assignmentDate = asset.getAssignmentDate(); // Uncomment if asset has assignmentDate
     }
 
     // Getters
@@ -44,7 +41,7 @@ public class AssignmentHistory {
     public String getEmployeeEmail() { return employeeEmail; }
     public String getDepartmentName() { return departmentName; }
 
-    // Setters (if needed)
+    // Setters 
     public void setAssetId(Long assetId) { this.assetId = assetId; }
     public void setAssetName(String assetName) { this.assetName = assetName; }
     public void setAssetDescription(String assetDescription) { this.assetDescription = assetDescription; }

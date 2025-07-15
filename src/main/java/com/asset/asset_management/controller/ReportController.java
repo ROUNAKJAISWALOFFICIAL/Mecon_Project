@@ -62,20 +62,4 @@ public class ReportController {
         return ResponseEntity.ok(report);
     }
 
-    // Add PDF/CSV generation endpoints here as described in previous response.
-    // Ensure they call the appropriate `generate...Pdf` or `generate...Csv` methods in ReportService.
-    // Example (if not already moved to MasterDataController's download endpoints):
-    /*
-    @GetMapping("/asset-inventory/pdf")
-    public ResponseEntity<byte[]> downloadAssetInventoryPdf(
-            @RequestParam(required = false) Long departmentId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String status) throws DocumentException, IOException {
-        byte[] pdfBytes = reportService.generateAssetReportPdf(departmentId, categoryId, status);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("filename", "Asset_Inventory_Report.pdf");
-        return ResponseEntity.ok().headers(headers).body(pdfBytes);
-    }
-    */
 }

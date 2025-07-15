@@ -33,13 +33,13 @@ import jakarta.persistence.Table; // Good practice to explicitly define @Table
 
         @ManyToOne
         @JoinColumn(name = "department_id")
-        @JsonBackReference // Correctly manages serialization of the Department relationship
+        @JsonBackReference 
         private Department department;
         
         @OneToOne(mappedBy = "employee")
         private User user;
         @OneToMany(mappedBy = "assignTo")
-        @JsonManagedReference // Correctly manages the JPA bidirectional relationship
+        @JsonManagedReference 
         @JsonIgnore
         private List<Asset> assignedAssets;
         // Constructors

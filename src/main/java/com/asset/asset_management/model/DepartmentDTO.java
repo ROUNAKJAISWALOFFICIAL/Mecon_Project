@@ -4,7 +4,7 @@ import com.asset.asset_management.entities.Department;
 
 public class DepartmentDTO {
     private Long id;
-    private String departmentName; // Ensure this matches your Department entity's getter
+    private String departmentName; 
 
     public DepartmentDTO(Department department) {
         this.id = department.getId();

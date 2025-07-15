@@ -11,12 +11,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // 🔴 Important for form login from static HTML
+            .csrf(csrf -> csrf.disable()) // Important for form login from static HTML
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/index.html", "/login", "/login.html", "/image/**").permitAll()
-                .anyRequest().permitAll() // 🔴 Allow all other requests too
+                .anyRequest().permitAll() // Allow all other requests too
             )
-            .formLogin(form -> form.disable()) // 🔴 Disable Spring Security’s default login form
+            .formLogin(form -> form.disable()) // Disable Spring Security’s default login form
             .logout(logout -> logout
                 .logoutSuccessUrl("/index.html").permitAll()
             );

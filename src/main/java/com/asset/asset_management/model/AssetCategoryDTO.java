@@ -1,4 +1,3 @@
-// src/main/java/com/asset/asset_management/dto/AssetCategoryDTO.java
 package com.asset.asset_management.model;
 
 import com.asset.asset_management.entities.AssetCategory;

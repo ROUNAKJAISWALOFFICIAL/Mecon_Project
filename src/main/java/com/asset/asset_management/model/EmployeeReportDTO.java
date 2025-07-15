@@ -1,7 +1,8 @@
 package com.asset.asset_management.model;
 
-import com.asset.asset_management.entities.Employee;
 import java.time.LocalDate;
+
+import com.asset.asset_management.entities.Employee;
 
 public class EmployeeReportDTO {
     private Long id;
@@ -9,8 +10,8 @@ public class EmployeeReportDTO {
     private String designation;
     private String email;
     private String phone;
-    private LocalDate joinDate; // New field for report
-    private String departmentName; // Flattened field for report
+    private LocalDate joinDate; 
+    private String departmentName; 
 
     public EmployeeReportDTO(Employee employee) {
         this.id = employee.getId();
@@ -19,7 +20,6 @@ public class EmployeeReportDTO {
         this.email = employee.getEmail();
         this.phone = employee.getPhone();
         this.joinDate = employee.getJoinDate();
-        // Handle null department gracefully
         this.departmentName = (employee.getDepartment() != null) ? employee.getDepartment().getDepartmentName() : "N/A";
     }
 
@@ -32,7 +32,7 @@ public class EmployeeReportDTO {
     public LocalDate getJoinDate() { return joinDate; }
     public String getDepartmentName() { return departmentName; }
 
-    // Setters (optional, typically not needed for report DTOs)
+    // Setters 
     public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setDesignation(String designation) { this.designation = designation; }

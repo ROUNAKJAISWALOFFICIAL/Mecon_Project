@@ -51,13 +51,11 @@ public class MasterDataController {
     // !!! CONFLICT RESOLVED HERE !!!
     // Changed path from "/reports/asset-inventory" to "/masterdata/asset-list"
     // This provides a general list of assets, distinct from the specific report in ReportController
-    @GetMapping("/masterdata/asset-list") // <--- Changed this line!
-    public ResponseEntity<List<AssetReport>> getAssetListForMasterData( // Renamed method for clarity
+    @GetMapping("/masterdata/asset-list")
+    public ResponseEntity<List<AssetReport>> getAssetListForMasterData( 
             @RequestParam(required = false) Long departmentId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String status) {
-        // This might fetch a simpler list, or if it's truly a "report" for master data,
-        // it can still call the report service.
         List<AssetReport> report = reportService.getAssetInventoryReport(departmentId, categoryId, status);
         return ResponseEntity.ok(report);
     }
@@ -73,9 +71,7 @@ public class MasterDataController {
 
 
     // --- PDF DOWNLOAD ENDPOINTS (for generating filtered PDFs) ---
-    // These paths are distinct from the HTML table report paths.
-    // Updated Asset PDF Download
-    @GetMapping("/downloads/assets/pdf") // Changed path to group downloads under /api/downloads/
+    @GetMapping("/downloads/assets/pdf") 
     public ResponseEntity<byte[]> downloadAssetReportPdf(
             @RequestParam(required = false) Long departmentId,
             @RequestParam(required = false) Long categoryId,
@@ -99,7 +95,7 @@ public class MasterDataController {
     }
 
     // New Employee PDF Download
-    @GetMapping("/downloads/employees/pdf") // Changed path to group downloads under /api/downloads/
+    @GetMapping("/downloads/employees/pdf") 
     public ResponseEntity<byte[]> downloadEmployeeReportPdf(
             @RequestParam(required = false) Long departmentId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate joinDateStart,

@@ -42,7 +42,7 @@ public class AssetRequestController {
     @Autowired
     private AssetRepository assetRepo;
 
-    // ✅ 1. Save asset request
+    //  Save asset request
     @PostMapping
     public AssetRequest requestAsset(@RequestBody RequestDTO dto) {
         Employee emp = employeeRepo.findById(dto.employeeId()).orElseThrow();
@@ -56,7 +56,7 @@ public class AssetRequestController {
         return requestRepo.save(req);
     }
 
-    // ✅ 2. Return mapped list for admin
+    //  Return mapped list for admin
     @GetMapping("/all")
     public List<Map<String, Object>> getAllRequestsForAdmin() {
         List<AssetRequest> requests = requestRepo.findAll();
@@ -74,7 +74,7 @@ public class AssetRequestController {
         }).toList();
     }
 
-    // ✅ 3. Update status (Accepted / Rejected)
+    // Update status (Accepted / Rejected)
 @PutMapping("/{id}/status")
 public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> requestBody) {
     Optional<AssetRequest> optional = requestRepo.findById(id);
@@ -90,7 +90,7 @@ public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestBody M
 }
 
 
-    // ✅ 4. Assign asset & approve request
+    // Assign asset & approve request
     @PostMapping("/assign")
     public ResponseEntity<String> assignAssetToEmployee(@RequestBody AssignAssetRequest req) {
         Optional<AssetRequest> requestOpt = requestRepo.findById(req.getRequestId());
@@ -122,10 +122,10 @@ public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestBody M
         return ResponseEntity.ok("Asset assigned and request approved");
     }
 
-    // ✅ 5. DTO for creating a request
+    //  DTO for creating a request
     public record RequestDTO(Long employeeId, Long categoryId) {}
 
-    // ✅ 6. DTO for approving request and assigning asset
+    //  DTO for approving request and assigning asset
     public static class AssignAssetRequest {
         private Long requestId;
         private Long employeeId;

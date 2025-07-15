@@ -114,7 +114,7 @@ public ResponseEntity<?> getCurrentLoggedInEmployee(HttpSession session) {
         return ResponseEntity.ok(employees);
     }
 
-    // 8. Get employees by join date range
+    // Get employees by join date range
     @GetMapping("/by-join-date")
     public ResponseEntity<List<Employee>> getEmployeesByJoinDateBetween(
             @RequestParam("startDate") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -126,7 +126,7 @@ public ResponseEntity<?> getCurrentLoggedInEmployee(HttpSession session) {
         return ResponseEntity.ok(employees);
     }
 
-    // 9. Get employees by department and join date range
+    // Get employees by department and join date range
     @GetMapping("/by-department-and-join-date")
     public ResponseEntity<List<Employee>> getEmployeesByDepartmentAndJoinDateBetween(
             @RequestParam("departmentId") Long departmentId,
