@@ -7,14 +7,14 @@ services:
     startCommand: java -jar target/mecon-0.0.1-SNAPSHOT.jar
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://mysql:3306/mecon_db
+        value: jdbc:postgresql://ep-empty-frost-af9mjwp8-pooler.c-2.us-west-2.aws.neon.tech:5432/neondb?sslmode=require
       - key: SPRING_DATASOURCE_USERNAME
-        value: render_user
+        value: neondb_owner
       - key: SPRING_DATASOURCE_PASSWORD
-        value: yourpassword
-
-  - type: background
-    name: mysql
-    env: docker
-    plan: free
-    dockerfilePath: ./mysql.Dockerfile
+        value: npg_62KxNjbEvRaw
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.postgresql.Driver
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+        value: org.hibernate.dialect.PostgreSQLDialect
